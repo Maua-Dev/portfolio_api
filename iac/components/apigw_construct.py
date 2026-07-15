@@ -38,10 +38,11 @@ class ApigwConstruct(Construct):
         )
         
         # implementação de uma key para mínima proteção de rotas abertas sensíveis
+        # não precisa ser necessariamente usado
         
         api_key = self.rest_api.add_api_key(
             id="AdminApiKey",
-            api_key_name="admin-key"
+            api_key_name="portfolio-apigw-admin-key"
         )
         
         plan = self.rest_api.add_usage_plan("UsagePlan",
