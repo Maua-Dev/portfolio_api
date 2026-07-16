@@ -52,7 +52,7 @@ class IacStack(Stack):
 
         self.lambda_construct = LambdaConstruct(
             self,
-            construct_id=f"{stack_name}Lambda",
+            construct_id=f"Lambda",
             api_gateway_resource=self.apigw_construct.api_gateway_resource,
             stage=stage,
             stack_name=stack_name,
@@ -79,7 +79,7 @@ class IacStack(Stack):
         
         self.ssm_construct = SsmConstruct(
             self, 
-            construct_id=f"{stack_name}Ssm",
+            construct_id=f"Ssm",
             mss_name_identification_for_path="portfolio",
             api=self.apigw_construct.rest_api,
             api_gateway_resource=self.apigw_construct.api_gateway_resource,
