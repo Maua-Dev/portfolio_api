@@ -77,13 +77,13 @@ class IacStack(Stack):
         # nesse projeto nao vamos passar cdn pois o acesso vai vir pela entidade retornada ao
         # inves de um link fixo tipo no antigo dev medias
         
-        # self.ssm_construct = SsmConstruct(
-        #     self, 
-        #     construct_id=f"Ssm",
-        #     mss_name_identification_for_path="portfolio",
-        #     api=self.apigw_construct.rest_api,
-        #     api_gateway_resource=self.apigw_construct.api_gateway_resource,
-        #     buckets=None, # o que deve ser salvo são os CDNs, visto que os buckets bloqueiam acesso pela URL publica
-        #     extra_params=None,
-        #     stage=stage
-        # )
+        self.ssm_construct = SsmConstruct(
+            self, 
+            construct_id=f"Ssm",
+            mss_name_identification_for_path="portfolio",
+            api=self.apigw_construct.rest_api,
+            api_gateway_resource=self.apigw_construct.api_gateway_resource,
+            buckets=None, # o que deve ser salvo são os CDNs, visto que os buckets bloqueiam acesso pela URL publica
+            extra_params=None,
+            stage=stage
+        )
