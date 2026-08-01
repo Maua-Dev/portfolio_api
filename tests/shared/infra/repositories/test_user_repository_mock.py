@@ -1,10 +1,7 @@
 import uuid
 
-import pytest
-
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
@@ -20,9 +17,9 @@ class Test_UserRepositoryMock:
 
     def test_get_user_not_found(self):
         repo = UserRepositoryMock()
+        user = repo.get_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
-        with pytest.raises(NoItemsFound):
-            repo.get_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
+        assert user is None
 
     def test_get_all_user(self):
         repo = UserRepositoryMock()
@@ -56,28 +53,34 @@ class Test_UserRepositoryMock:
 
     def test_delete_user_not_found(self):
         repo = UserRepositoryMock()
+        user = repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
-        with pytest.raises(NoItemsFound):
-            repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
+        assert user is None
 
     def test_update_user(self):
         repo = UserRepositoryMock()
-        user = repo.update_user(
-            uuid.UUID("00000000-0000-0000-0000-000000000002"),
-            new_role=RoleEnum.ADMIN
+        updated_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+            email="brancas@maua.br",
+            role=RoleEnum.ADMIN,
+            senha_hash="hash_brancas"
         )
+
+        user = repo.update_user(updated_user)
 
         assert user.role == RoleEnum.ADMIN
         assert repo.users[1].role == RoleEnum.ADMIN
-        # os outros campos permanecem intactos
-        assert user.email == "brancas@maua.br"
-        assert user.senha_hash == "hash_brancas"
+        assert repo.users[1].id == uuid.UUID("00000000-0000-0000-0000-000000000002")
 
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()
+        ghost_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000069"),
+            email="ghost@maua.br",
+            role=RoleEnum.USER,
+            senha_hash="hash_ghost"
+        )
 
-        with pytest.raises(NoItemsFound):
-            repo.update_user(
-                uuid.UUID("00000000-0000-0000-0000-000000000069"),
-                new_role=RoleEnum.ADMIN
-            )
+        user = repo.update_user(ghost_user)
+
+        assert user is None
