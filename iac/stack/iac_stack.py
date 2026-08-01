@@ -51,18 +51,20 @@ class IacStack(Stack):
         }
 
         self.lambda_construct = LambdaConstruct(
-            self, 
-            construct_id=f"{stack_name}Lambda",
+            self,
+            construct_id=f"Lambda",
             api_gateway_resource=self.apigw_construct.api_gateway_resource,
             stage=stage,
             stack_name=stack_name,
-            plans_bucket=self.s3_construct.plans_bucket,
-            subject_bucket=self.s3_construct.subject_bucket,
             environment_variables=ENVIRONMENT_VARIABLES
         )
         
         for function in self.lambda_construct.funtions_that_need_dynamo_db_access:
             self.dynamo_construct.academic_catalog_table.grant_read_write_data(function)
+            
+        for function in self.lambda_construct.functions_that_need_s3_access:
+            self.s3_construct.entity_assets_bucket.grant_read_write(function)
+       
         
         # instância SSM manager para passar automaticamente variáveis a um hub de segredos
         # da prórpia conta, evitando ter que manualmente passa-las para o github secrets
@@ -77,7 +79,7 @@ class IacStack(Stack):
         
         self.ssm_construct = SsmConstruct(
             self, 
-            construct_id=f"{stack_name}Ssm",
+            construct_id=f"Ssm",
             mss_name_identification_for_path="portfolio",
             api=self.apigw_construct.rest_api,
             api_gateway_resource=self.apigw_construct.api_gateway_resource,

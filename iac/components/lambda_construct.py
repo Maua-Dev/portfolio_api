@@ -14,6 +14,7 @@ class LambdaConstruct(Construct):
     stage: str
     stack_name: str
     funtions_that_need_dynamo_db_access: list[lambda_.Function] = []
+    functions_that_need_s3_access: list[lambda_.Function] = []
 
     def create_lambda_api_gateway_integration(
         self, 
