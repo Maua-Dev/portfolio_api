@@ -4,6 +4,7 @@ from typing import List
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.helpers.errors.usecase_errors import DuplicatedItem, NoItemsFound
 
 
 class UserRepositoryMock(IUserRepository):
@@ -36,12 +37,16 @@ class UserRepositoryMock(IUserRepository):
             if user.id == id:
                 return user
 
-        return None
+        raise NoItemsFound("id")
 
     def get_all_user(self) -> List[User]:
         return self.users
 
     def create_user(self, new_user: User) -> User:
+        for user in self.users:
+            if user.id == new_user.id or user.email == new_user.email:
+                raise DuplicatedItem("user")
+
         self.users.append(new_user)
         return new_user
 
@@ -50,7 +55,7 @@ class UserRepositoryMock(IUserRepository):
             if user.id == id:
                 return self.users.pop(idx)
 
-        return None
+        raise NoItemsFound("id")
 
     def update_user(self, user: User) -> User:
         for idx, existing_user in enumerate(self.users):
@@ -58,4 +63,4 @@ class UserRepositoryMock(IUserRepository):
                 self.users[idx] = user
                 return user
 
-        return None
+        raise NoItemsFound("id")

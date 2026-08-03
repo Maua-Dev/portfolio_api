@@ -1,7 +1,10 @@
 import uuid
 
+import pytest
+
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
+from src.shared.helpers.errors.usecase_errors import DuplicatedItem, NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
@@ -17,9 +20,9 @@ class Test_UserRepositoryMock:
 
     def test_get_user_not_found(self):
         repo = UserRepositoryMock()
-        user = repo.get_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
-        assert user is None
+        with pytest.raises(NoItemsFound):
+            repo.get_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
     def test_get_all_user(self):
         repo = UserRepositoryMock()
@@ -44,6 +47,18 @@ class Test_UserRepositoryMock:
         assert repo.users[3].email == "ana@maua.br"
         assert repo.users[3].role == RoleEnum.ADMIN
 
+    def test_create_user_duplicated(self):
+        repo = UserRepositoryMock()
+        duplicated_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            email="soller@maua.br",
+            role=RoleEnum.ADMIN,
+            senha_hash="hash_soller"
+        )
+
+        with pytest.raises(DuplicatedItem):
+            repo.create_user(duplicated_user)
+
     def test_delete_user(self):
         repo = UserRepositoryMock()
         user = repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000001"))
@@ -53,9 +68,9 @@ class Test_UserRepositoryMock:
 
     def test_delete_user_not_found(self):
         repo = UserRepositoryMock()
-        user = repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
-        assert user is None
+        with pytest.raises(NoItemsFound):
+            repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
     def test_update_user(self):
         repo = UserRepositoryMock()
@@ -81,6 +96,5 @@ class Test_UserRepositoryMock:
             senha_hash="hash_ghost"
         )
 
-        user = repo.update_user(ghost_user)
-
-        assert user is None
+        with pytest.raises(NoItemsFound):
+            repo.update_user(ghost_user)

@@ -10,7 +10,7 @@ class IUserRepository(ABC):
     @abstractmethod
     def get_user(self, id: uuid.UUID) -> User:
         """
-        If user not found return None
+        If user not found raise NoItemsFound
         """
         pass
 
@@ -20,18 +20,21 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def create_user(self, new_user: User) -> User:
+        """
+        If user already exists raise DuplicatedItem
+        """
         pass
 
     @abstractmethod
     def delete_user(self, id: uuid.UUID) -> User:
         """
-        If user not found return None
+        If user not found raise NoItemsFound
         """
         pass
 
     @abstractmethod
     def update_user(self, user: User) -> User:
         """
-        If user not found return None
+        If user not found raise NoItemsFound
         """
         pass
