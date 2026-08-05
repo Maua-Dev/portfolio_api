@@ -1,3 +1,5 @@
+import uuid
+
 from .get_user_usecase import GetUserUsecase
 from .get_user_viewmodel import GetUserViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
@@ -24,12 +26,12 @@ class GetUserController:
                     fieldTypeReceived=request.data.get('user_id').__class__.__name__
                 )
 
-            if not request.data.get('user_id').isdecimal():
+            try:
+                user_id = uuid.UUID(request.data.get('user_id'))
+            except ValueError:
                 raise EntityError("user_id")
 
-            user = self.GetUserUsecase(
-                user_id=int(request.data.get('user_id'))
-            )
+            user = self.GetUserUsecase(user_id=user_id)
 
             viewmodel = GetUserViewmodel(user)
             return OK(viewmodel.to_dict())
