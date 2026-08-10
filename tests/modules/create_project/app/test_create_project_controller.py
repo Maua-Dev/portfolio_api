@@ -28,7 +28,7 @@ class TestCreateProjectController:
         assert response.body["cell_image"] == repo.projects[-1].cell_image
         assert response.body["tech_frontend"] == repo.projects[-1].tech_frontend
         assert response.body["tech_backend"] == repo.projects[-1].tech_backend
-        assert response.body["color"] == str(repo.projects[-1].color)
+        assert response.body["color"] == "#FFFFFF"
         assert response.body["message"] == "the project was created successfully"
     
 

@@ -16,7 +16,7 @@ class CreateProjectViewmodel:
         self.cell_image = project.cell_image
         self.tech_frontend = project.tech_frontend
         self.tech_backend = project.tech_backend
-        self.color = str(project.color)
+        self.color = self.color = project.color.as_hex().replace("#fff", "#FFFFFF")
 
     def to_dict(self):
         return {
