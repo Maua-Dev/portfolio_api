@@ -7,15 +7,14 @@ repo = Environments.get_user_repo()()
 usecase = CreateUserUsecase(repo)
 controller = CreateUserController(usecase)
 
-def lambda_handler(event, context):
 
-    from pprint import pprint
-
-    pprint(event)
-
+def create_user_presenter(event):
     httpRequest = LambdaHttpRequest(data=event)
     response = controller(httpRequest)
     httpResponse = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
-
     return httpResponse.toDict()
 
+
+def lambda_handler(event, context):
+    response = create_user_presenter(event)
+    return response
