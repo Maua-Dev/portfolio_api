@@ -27,6 +27,36 @@ class CreateProjectController:
                 raise MissingParameters('color')
 
 
+            if not isinstance(request.data.get('title'), str):
+                raise WrongTypeParameter('title','str',
+                    type(request.data.get('title')).__name__
+                )
+
+            if not isinstance(request.data.get('description'), str):
+                raise WrongTypeParameter('description','str',
+                    type(request.data.get('description')).__name__
+                )
+
+            if not isinstance(request.data.get('cell_image'), str):
+                raise WrongTypeParameter('cell_image','str',
+                    type(request.data.get('cell_image')).__name__
+                )
+
+            if not isinstance(request.data.get('tech_frontend'), str):
+                raise WrongTypeParameter('tech_frontend','str',
+                    type(request.data.get('tech_frontend')).__name__
+                )
+
+            if not isinstance(request.data.get('tech_backend'), str):
+                raise WrongTypeParameter('tech_backend','str',
+                    type(request.data.get('tech_backend')).__name__
+                )
+
+            if not isinstance(request.data.get('color'), str):
+                raise WrongTypeParameter('color','str',
+                    type(request.data.get('color')).__name__
+                )
+
             project = self.CreateProjectUsecase(
                 title=request.data.get('title'),
                 description=request.data.get('description'),
@@ -34,7 +64,7 @@ class CreateProjectController:
                 tech_frontend=request.data.get('tech_frontend'),
                 tech_backend=request.data.get('tech_backend'),
                 color=Color(request.data.get('color'))
-            )
+                )
 
             viewmodel = CreateProjectViewmodel(project)
             return Created(viewmodel.to_dict())

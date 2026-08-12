@@ -142,3 +142,118 @@ class TestCreateProjectController:
 
         assert response.status_code == 400
         assert response.body == "Field color is missing"
+
+
+# Testes que verificam os tipos recebidos
+
+    def test_create_project_controller_wrong_type_title(self):
+        repo = ProjectRepositoryMock()
+        usecase = CreateProjectUsecase(repo=repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            "title": 123,
+            "description": "Descrição projeto teste 1",
+            "cell_image": "imagem.jpeg",
+            "tech_frontend": "React",
+            "tech_backend": "Node.js",
+            "color": "#FFFFFF"
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "Field title isn't in the right type.\n Received: int.\n Expected: str"
+
+    def test_create_project_controller_wrong_type_description(self):
+        repo = ProjectRepositoryMock()
+        usecase = CreateProjectUsecase(repo=repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            "title": "Projeto Teste 1",
+            "description": 123,
+            "cell_image": "imagem.jpeg",
+            "tech_frontend": "React",
+            "tech_backend": "Node.js",
+            "color": "#FFFFFF"
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "Field description isn't in the right type.\n Received: int.\n Expected: str"
+
+    def test_create_project_controller_wrong_type_cell_image(self):
+        repo = ProjectRepositoryMock()
+        usecase = CreateProjectUsecase(repo=repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            "title": "Projeto Teste 1",
+            "description": "Descrição projeto teste 1",
+            "cell_image": 123,
+            "tech_frontend": "React",
+            "tech_backend": "Node.js",
+            "color": "#FFFFFF"
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "Field cell_image isn't in the right type.\n Received: int.\n Expected: str"
+
+    def test_create_project_controller_wrong_type_tech_frontend(self):
+        repo = ProjectRepositoryMock()
+        usecase = CreateProjectUsecase(repo=repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            "title": "Projeto Teste 1",
+            "description": "Descrição projeto teste 1",
+            "cell_image": "imagem.jpeg",
+            "tech_frontend": 123,
+            "tech_backend": "Node.js",
+            "color": "#FFFFFF"
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "Field tech_frontend isn't in the right type.\n Received: int.\n Expected: str"
+
+    def test_create_project_controller_wrong_type_tech_backend(self):
+        repo = ProjectRepositoryMock()
+        usecase = CreateProjectUsecase(repo=repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            "title": "Projeto Teste 1",
+            "description": "Descrição projeto teste 1",
+            "cell_image": "imagem.jpeg",
+            "tech_frontend": "React",
+            "tech_backend": 123,
+            "color": "#FFFFFF"
+        })
+
+        response = controller(request=request)
+        assert response.status_code == 400
+        assert response.body == "Field tech_backend isn't in the right type.\n Received: int.\n Expected: str"
+
+    def test_create_project_controller_wrong_type_color(self):
+        repo = ProjectRepositoryMock()
+        usecase = CreateProjectUsecase(repo=repo)
+        controller = CreateProjectController(usecase=usecase)
+
+        request = HttpRequest(body={
+            "title": "Projeto Teste 1",
+            "description": "Descrição projeto teste 1",
+            "cell_image": "imagem.jpeg",
+            "tech_frontend": "React",
+            "tech_backend": "Node.js",
+            "color": 123
+        })
+
+        response = controller(request=request)
+        assert response.status_code == 400
+        assert response.body == "Field color isn't in the right type.\n Received: int.\n Expected: str"
