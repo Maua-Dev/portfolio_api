@@ -18,9 +18,9 @@ app = cdk.App()
 aws_region = os.environ.get("AWS_REGION")
 aws_account_id = os.environ.get("AWS_ACCOUNT_ID")
 stack_name = os.environ.get("STACK_NAME")
-
-stage = os.environ.get("GITHUB_REF_NAME").capitalize()
-stack_name = os.environ.get("STACK_NAME")
+# Prefira STAGE (setado no workflow). Em branches infra/<x>, o synth
+# passa so o prefixo "infra" para evitar "/" em nomes de recurso.
+stage = (os.environ.get("STAGE") or os.environ.get("GITHUB_REF_NAME") or "dev").capitalize()
 
 tags = {
     'project': 'PortfolioApi',
