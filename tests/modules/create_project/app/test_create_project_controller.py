@@ -163,7 +163,7 @@ class TestCreateProjectController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field title isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'title' has the wrong type. Received: 'int'. Expected: 'str'."
 
     def test_create_project_controller_wrong_type_description(self):
         repo = ProjectRepositoryMock()
@@ -182,7 +182,7 @@ class TestCreateProjectController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field description isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'description' has the wrong type. Received: 'int'. Expected: 'str'."
 
     def test_create_project_controller_wrong_type_cell_image(self):
         repo = ProjectRepositoryMock()
@@ -201,7 +201,7 @@ class TestCreateProjectController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field cell_image isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'cell_image' has the wrong type. Received: 'int'. Expected: 'str'."
 
     def test_create_project_controller_wrong_type_tech_frontend(self):
         repo = ProjectRepositoryMock()
@@ -220,7 +220,7 @@ class TestCreateProjectController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field tech_frontend isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'tech_frontend' has the wrong type. Received: 'int'. Expected: 'str'."
 
     def test_create_project_controller_wrong_type_tech_backend(self):
         repo = ProjectRepositoryMock()
@@ -238,7 +238,7 @@ class TestCreateProjectController:
 
         response = controller(request=request)
         assert response.status_code == 400
-        assert response.body == "Field tech_backend isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'tech_backend' has the wrong type. Received: 'int'. Expected: 'str'."
 
     def test_create_project_controller_wrong_type_color(self):
         repo = ProjectRepositoryMock()
@@ -256,4 +256,4 @@ class TestCreateProjectController:
 
         response = controller(request=request)
         assert response.status_code == 400
-        assert response.body == "Field color isn't in the right type.\n Received: int.\n Expected: str"
+        assert response.body == "The field 'color' has the wrong type. Received: 'int'. Expected: 'str'."

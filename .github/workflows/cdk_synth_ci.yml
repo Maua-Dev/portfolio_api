@@ -1,0 +1,42 @@
+name: CDK Synth
+
+on:
+  workflow_call:
+
+jobs:
+  cdkSynth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-app.txt
+          pip install -r iac/requirements-infra.txt
+          npm install -g aws-cdk
+
+      # Em branches infra/<algo>, usa so o prefixo "infra" para nao quebrar nomes S3.
+      - name: Resolve STAGE
+        run: |
+          REF="${GITHUB_REF_NAME}"
+          STAGE="${REF%%/*}"
+          echo "STAGE=${STAGE}" >> "$GITHUB_ENV"
+          echo "Resolved STAGE=${STAGE} from GITHUB_REF_NAME=${REF}"
+
+      - name: CDK synth
+        working-directory: iac
+        run: cdk synth
+        env:
+          AWS_REGION: sa-east-1
+          AWS_ACCOUNT_ID: "000000000000"
+          STACK_NAME: PortfolioStackBackCi
+          MSS_NAME: portfolio_api
