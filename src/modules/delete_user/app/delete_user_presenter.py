@@ -9,10 +9,14 @@ usecase = DeleteUserUsecase(repo)
 controller = DeleteUserController(usecase)
 
 
-@observed_handler("delete_user")
-def lambda_handler(event, context):
+def delete_user_presenter(event):
     httpRequest = LambdaHttpRequest(data=event)
     response = controller(httpRequest)
     httpResponse = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
-
     return httpResponse.toDict()
+
+
+@observed_handler("delete_user")
+def lambda_handler(event, context):
+    response = delete_user_presenter(event)
+    return response
