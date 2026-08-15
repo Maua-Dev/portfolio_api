@@ -14,8 +14,7 @@ class ItemDynamoDTO:
         """
         Converts an Item entity to a dictionary compatible with DynamoDB.
 
-        Includes base keys (pk/sk) and sparse GSI1 attributes (gsi1pk/gsi1sk)
-        when item_type is set.
+        Includes base keys (pk/sk).
 
         Args:
             item: The Item entity to serialize.
