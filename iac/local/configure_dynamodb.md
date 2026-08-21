@@ -107,6 +107,8 @@ DYNAMO_SORT_KEY=sk \
 python -m src.shared.infra.repositories.load_user_mock_to_dynamo --target aws
 ```
 
+Local (`STAGE=TEST`) uses table name `PortfolioTable-test` with keys `pk`/`sk` (see `Environments`).
+
 Use your real table name / region from the deployed stack. Do not run this against production.
 
 The script file lives at:
