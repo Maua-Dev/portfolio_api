@@ -16,7 +16,10 @@ class ProjectDynamoDTO(BaseModel):
 
     @staticmethod
     def from_entity(project: Project) -> "ProjectDynamoDTO":
-        return ProjectDynamoDTO.model_validate(project.model_dump())
+        data = project.model_dump()
+        data["id"] = str(data["id"])
+
+        return ProjectDynamoDTO.model_validate(data)
 
     def to_dynamo(self) -> dict:
         return {
