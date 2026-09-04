@@ -25,7 +25,6 @@ class TestDeleteUserController:
             id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
             email="rubio@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_rubio"
         )
         self.repo.create_user(rubio)
         request = MockHttpRequest(data={'user_id': '00000000-0000-0000-0000-000000000004'})

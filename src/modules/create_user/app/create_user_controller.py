@@ -25,16 +25,6 @@ class CreateUserController:
                     fieldTypeReceived=request.data.get('email').__class__.__name__
                 )
 
-            if request.data.get('senha_hash') is None:
-                raise MissingParameters('senha_hash')
-
-            if type(request.data.get('senha_hash')) != str:
-                raise WrongTypeParameter(
-                    fieldName="senha_hash",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('senha_hash').__class__.__name__
-                )
-
             role = request.data.get('role')
 
             if role is None:
@@ -49,7 +39,6 @@ class CreateUserController:
 
             user = self.CreateUserUsecase(
                 email=request.data.get('email'),
-                senha_hash=request.data.get('senha_hash'),
                 role=role
             )
 

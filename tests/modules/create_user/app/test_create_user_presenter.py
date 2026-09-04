@@ -17,7 +17,6 @@ class Test_CreateUserPresenter:
     def test_create_user_presenter(self):
         event = build_event({
             'email': 'giulia@maua.br',
-            'senha_hash': 'hash_giulia',
             'role': 'Admin'
         })
 
@@ -30,14 +29,7 @@ class Test_CreateUserPresenter:
         assert body['message'] == 'the user was created successfully'
 
     def test_create_user_presenter_missing_email(self):
-        event = build_event({'senha_hash': 'hash_giulia'})
-
-        response = create_user_presenter(event)
-
-        assert response['statusCode'] == 400
-
-    def test_create_user_presenter_missing_senha_hash(self):
-        event = build_event({'email': 'outro@maua.br'})
+        event = build_event({})
 
         response = create_user_presenter(event)
 
@@ -46,7 +38,6 @@ class Test_CreateUserPresenter:
     def test_create_user_presenter_email_is_not_valid(self):
         event = build_event({
             'email': 'isso_nao_e_email',
-            'senha_hash': 'hash_giulia'
         })
 
         response = create_user_presenter(event)
@@ -56,7 +47,6 @@ class Test_CreateUserPresenter:
     def test_create_user_presenter_already_exists(self):
         event = build_event({
             'email': 'soller@maua.br',
-            'senha_hash': 'hash_qualquer'
         })
 
         response = create_user_presenter(event)

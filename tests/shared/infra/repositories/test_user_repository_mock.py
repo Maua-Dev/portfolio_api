@@ -16,7 +16,6 @@ class Test_UserRepositoryMock:
         assert user.id == uuid.UUID("00000000-0000-0000-0000-000000000001")
         assert user.email == "soller@maua.br"
         assert user.role == RoleEnum.ADMIN
-        assert user.senha_hash == "hash_soller"
 
     def test_get_user_not_found(self):
         repo = UserRepositoryMock()
@@ -37,7 +36,6 @@ class Test_UserRepositoryMock:
             id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
             email="ana@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_ana"
         )
 
         user = repo.create_user(new_user)
@@ -53,7 +51,6 @@ class Test_UserRepositoryMock:
             id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
             email="soller@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_soller"
         )
 
         with pytest.raises(DuplicatedItem):
@@ -78,7 +75,6 @@ class Test_UserRepositoryMock:
             id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
             email="brancas@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_brancas"
         )
 
         user = repo.update_user(updated_user)
@@ -93,7 +89,6 @@ class Test_UserRepositoryMock:
             id=uuid.UUID("00000000-0000-0000-0000-000000000069"),
             email="ghost@maua.br",
             role=RoleEnum.USER,
-            senha_hash="hash_ghost"
         )
 
         with pytest.raises(NoItemsFound):
