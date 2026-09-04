@@ -3,7 +3,7 @@ import os
 
 os.environ["STAGE"] = "TEST"
 
-from src.modules.get_user.app.get_user_presenter import get_user_presenter
+from src.modules.user.get_user.app.get_user_presenter import get_user_presenter
 
 
 def build_event(user_id: str = None) -> dict:

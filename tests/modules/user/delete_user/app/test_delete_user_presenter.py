@@ -4,7 +4,7 @@ import uuid
 
 os.environ["STAGE"] = "TEST"
 
-from src.modules.delete_user.app.delete_user_presenter import delete_user_presenter, repo
+from src.modules.user.delete_user.app.delete_user_presenter import delete_user_presenter, repo
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 

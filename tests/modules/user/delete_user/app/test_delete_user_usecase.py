@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
+from src.modules.user.delete_user.app.delete_user_usecase import DeleteUserUsecase
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.domain_errors import EntityError

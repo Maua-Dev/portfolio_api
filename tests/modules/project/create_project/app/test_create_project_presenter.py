@@ -1,7 +1,7 @@
 import os
 import json
 os.environ["STAGE"] = "TEST"
-from src.modules.create_project.app.create_project_presenter import lambda_handler
+from src.modules.project.create_project.app.create_project_presenter import lambda_handler
 
 
 class TestCreateProjectPresenter:

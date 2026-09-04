@@ -1,6 +1,6 @@
 from pydantic.color import Color
-from src.modules.create_project.app.create_project_controller import CreateProjectController
-from src.modules.create_project.app.create_project_usecase import CreateProjectUsecase
+from src.modules.project.create_project.app.create_project_controller import CreateProjectController
+from src.modules.project.create_project.app.create_project_usecase import CreateProjectUsecase
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 

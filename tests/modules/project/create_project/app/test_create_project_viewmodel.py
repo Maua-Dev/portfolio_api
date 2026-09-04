@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 from pydantic.color import Color
-from src.modules.create_project.app.create_project_viewmodel import CreateProjectViewmodel
+from src.modules.project.create_project.app.create_project_viewmodel import CreateProjectViewmodel
 from src.shared.domain.entities.project import Project
 
 class TestCreateProjectViewmodel:

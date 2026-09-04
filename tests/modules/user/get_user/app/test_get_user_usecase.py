@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from src.modules.get_user.app.get_user_usecase import GetUserUsecase
+from src.modules.user.get_user.app.get_user_usecase import GetUserUsecase
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.domain_errors import EntityError

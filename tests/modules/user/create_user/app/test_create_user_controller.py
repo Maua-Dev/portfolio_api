@@ -1,5 +1,5 @@
-from src.modules.create_user.app.create_user_controller import CreateUserController
-from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
+from src.modules.user.create_user.app.create_user_controller import CreateUserController
+from src.modules.user.create_user.app.create_user_usecase import CreateUserUsecase
 from src.shared.helpers.enum.http_status_code_enum import HttpStatusCodeEnum
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 

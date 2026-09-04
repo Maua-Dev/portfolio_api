@@ -1,6 +1,6 @@
 import uuid
 
-from src.modules.create_user.app.create_user_viewmodel import CreateUserViewmodel
+from src.modules.user.create_user.app.create_user_viewmodel import CreateUserViewmodel
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 

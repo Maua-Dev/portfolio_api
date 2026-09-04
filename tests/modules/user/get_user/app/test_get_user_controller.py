@@ -1,7 +1,7 @@
 import uuid
 
-from src.modules.get_user.app.get_user_controller import GetUserController
-from src.modules.get_user.app.get_user_usecase import GetUserUsecase
+from src.modules.user.get_user.app.get_user_controller import GetUserController
+from src.modules.user.get_user.app.get_user_usecase import GetUserUsecase
 from src.shared.helpers.enum.http_status_code_enum import HttpStatusCodeEnum
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 

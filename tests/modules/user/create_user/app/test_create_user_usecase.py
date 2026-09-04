@@ -1,6 +1,6 @@
 import pytest
 
-from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
+from src.modules.user.create_user.app.create_user_usecase import CreateUserUsecase
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.domain_errors import EntityError
