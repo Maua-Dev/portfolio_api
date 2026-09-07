@@ -12,7 +12,6 @@ class TestDeleteUserViewmodel:
             id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
             email="rubio@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_rubio"
         )
 
         viewmodel = DeleteUserViewmodel(user)
@@ -25,12 +24,11 @@ class TestDeleteUserViewmodel:
             'message': "the user was deleted successfully"
         }
 
-    def test_user_id_is_string_and_hides_sensitive_fields(self):
+    def test_user_id_is_string(self):
         user = User(
             id=uuid.uuid4(),
             email="sakamoto@maua.br",
             role=RoleEnum.USER,
-            senha_hash="hash_sakamoto"
         )
 
         viewmodel = DeleteUserViewmodel(user)
@@ -38,4 +36,3 @@ class TestDeleteUserViewmodel:
 
         assert isinstance(viewmodel.user_id, str)
         assert result['user_role'] == 'User'
-        assert 'senha_hash' not in result

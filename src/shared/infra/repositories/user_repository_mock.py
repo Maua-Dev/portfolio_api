@@ -16,19 +16,16 @@ class UserRepositoryMock(IUserRepository):
                 id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
                 email="soller@maua.br",
                 role=RoleEnum.ADMIN,
-                senha_hash="hash_soller"
             ),
             User(
                 id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
                 email="brancas@maua.br",
                 role=RoleEnum.USER,
-                senha_hash="hash_brancas"
             ),
             User(
                 id=uuid.UUID("00000000-0000-0000-0000-000000000003"),
                 email="vilas@maua.br",
                 role=RoleEnum.USER,
-                senha_hash="hash_vilas"
             )
         ]
 

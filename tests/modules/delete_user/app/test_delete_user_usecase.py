@@ -20,7 +20,6 @@ class TestDeleteUserUsecase:
             id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
             email="rubio@maua.br",
             role=RoleEnum.USER,
-            senha_hash="hash_rubio"
         )
         repo.create_user(rubio)
 

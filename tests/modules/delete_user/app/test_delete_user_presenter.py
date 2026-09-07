@@ -22,7 +22,6 @@ class TestDeleteUserPresenter:
             id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
             email="rubio@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_rubio"
         )
         repo.create_user(rubio)
         event = build_event(user_id='00000000-0000-0000-0000-000000000004')

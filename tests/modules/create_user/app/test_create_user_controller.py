@@ -19,7 +19,6 @@ class Test_CreateUserController:
     def test_create_user(self):
         request = MockHttpRequest(data={
             'email': 'giulia@maua.br',
-            'senha_hash': 'hash_giulia',
             'role': 'Admin'
         })
 
@@ -34,7 +33,6 @@ class Test_CreateUserController:
     def test_create_user_role_default_is_user(self):
         request = MockHttpRequest(data={
             'email': 'giulia@maua.br',
-            'senha_hash': 'hash_giulia'
         })
 
         response = self.controller(request)
@@ -43,25 +41,13 @@ class Test_CreateUserController:
         assert response.body['user_role'] == 'User'
 
     def test_create_user_missing_email(self):
-        request = MockHttpRequest(data={'senha_hash': 'hash_giulia'})
-        response = self.controller(request)
-
-        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
-
-    def test_create_user_missing_senha_hash(self):
-        request = MockHttpRequest(data={'email': 'giulia@maua.br'})
+        request = MockHttpRequest(data={})
         response = self.controller(request)
 
         assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
     def test_create_user_email_is_not_str(self):
-        request = MockHttpRequest(data={'email': 123, 'senha_hash': 'hash_giulia'})
-        response = self.controller(request)
-
-        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
-
-    def test_create_user_senha_hash_is_not_str(self):
-        request = MockHttpRequest(data={'email': 'giulia@maua.br', 'senha_hash': 123})
+        request = MockHttpRequest(data={'email': 123})
         response = self.controller(request)
 
         assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
@@ -69,7 +55,6 @@ class Test_CreateUserController:
     def test_create_user_email_is_not_valid(self):
         request = MockHttpRequest(data={
             'email': 'isso_nao_e_email',
-            'senha_hash': 'hash_giulia'
         })
         response = self.controller(request)
 
@@ -78,7 +63,6 @@ class Test_CreateUserController:
     def test_create_user_role_is_not_valid(self):
         request = MockHttpRequest(data={
             'email': 'giulia@maua.br',
-            'senha_hash': 'hash_giulia',
             'role': 'Superuser'
         })
         response = self.controller(request)
@@ -88,7 +72,6 @@ class Test_CreateUserController:
     def test_create_user_role_is_not_str(self):
         request = MockHttpRequest(data={
             'email': 'giulia@maua.br',
-            'senha_hash': 'hash_giulia',
             'role': 123
         })
         response = self.controller(request)
@@ -98,7 +81,6 @@ class Test_CreateUserController:
     def test_create_user_already_exists(self):
         request = MockHttpRequest(data={
             'email': 'soller@maua.br',
-            'senha_hash': 'hash_qualquer'
         })
         response = self.controller(request)
 

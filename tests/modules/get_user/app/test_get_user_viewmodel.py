@@ -12,7 +12,6 @@ class TestGetUserViewmodel:
             id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
             email="soller@maua.br",
             role=RoleEnum.ADMIN,
-            senha_hash="hash_soller"
         )
 
         viewmodel = GetUserViewmodel(user)
@@ -25,12 +24,11 @@ class TestGetUserViewmodel:
             'message': "the user was retrieved successfully"
         }
 
-    def test_user_id_is_string_and_hides_sensitive_fields(self):
+    def test_user_id_is_string(self):
         user = User(
             id=uuid.uuid4(),
             email="brancas@maua.br",
             role=RoleEnum.USER,
-            senha_hash="hash_brancas"
         )
 
         viewmodel = GetUserViewmodel(user)
@@ -38,4 +36,3 @@ class TestGetUserViewmodel:
 
         assert isinstance(viewmodel.user_id, str)
         assert result['user_role'] == 'User'
-        assert 'senha_hash' not in result
