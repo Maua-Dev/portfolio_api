@@ -5,21 +5,23 @@ from boto3.dynamodb.conditions import Key
 from src.shared.domain.entities.project import Project
 from src.shared.domain.repositories.project_repository_interface import IProjectRepository
 from src.shared.infra.dto.project_dynamo_dto import ProjectDynamoDTO
-from src.shared.infra.external.dynamo.dynamo_datasource import DynamoDatasource
-from src.shared.infra.external.dynamo..dynamo_table import DynamoTable
+from src.shared.infra.external.dynamo.datasources.dynamo_datasource import DynamoDatasource
+from src.shared.infra.external.dynamo.dynamo_table import DynamoTable
 from src.shared.helpers.errors.usecase_errors import (NoItemsFound, DuplicatedItem)
 from src.shared.infra.external.dynamo.dynamo_keys import (EntityKind, partition_key, sort_key)
-
+from src.shared.environments import Environments
 
 class ProjectRepositoryDynamo(IProjectRepository):
-    def __init__(self, dynamo_table_name: str, region: str, endpoint_url: str = None):
+    def __init__(self):
+        envs = Environments.get_envs()
         self.dynamo = DynamoDatasource(
-            dynamo_table_name= dynamo_table_name,
-            partition_key="pk",
-            sort_key="sk",
-            region=region,
-            endpoint_url=endpoint_url,
+            dynamo_table_name=envs.dynamo_table_name,
+            region=envs.region,
+            partition_key=envs.dynamo_partition_key,
+            sort_key=envs.dynamo_sort_key,
+            endpoint_url=envs.dynamo_endpoint_url,
         )
+
     def get_project(self, project_id: UUID) -> Project:
         response = self.dynamo.get_item(
             partition_key(EntityKind.PROJECT),
@@ -51,9 +53,9 @@ class ProjectRepositoryDynamo(IProjectRepository):
         if "Item" in response:
             raise DuplicatedItem("project_id")
 
-        dto = ProjectDynamoDTO.from_entity(new_project) 
+        dto = ProjectDynamoDTO.from_entity(new_project)
         self.dynamo.put_item(
-            item=dto.model_dump(),
+            item=dto.to_dynamo(),
             partition_key=partition_key(EntityKind.PROJECT),
             sort_key=sort_key(new_project.id, EntityKind.PROJECT),
         )
@@ -85,7 +87,7 @@ class ProjectRepositoryDynamo(IProjectRepository):
         self.dynamo.hard_update_item(
             partition_key=partition_key(EntityKind.PROJECT),
             sort_key=sort_key(project.id, EntityKind.PROJECT),
-            item=dto.model_dump(),
+            item=dto.to_dynamo(),
         )
 
         return project

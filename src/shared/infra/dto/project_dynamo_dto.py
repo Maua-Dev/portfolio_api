@@ -22,12 +22,14 @@ class ProjectDynamoDTO(BaseModel):
         return ProjectDynamoDTO.model_validate(data)
 
     def to_dynamo(self) -> dict:
+        data = self.model_dump()
+        data["color"] = self.color.as_hex()
+
         return {
-            "entity": "project",
             "pk": partition_key(EntityKind.PROJECT),
             "sk": sort_key(uuid.UUID(self.id), EntityKind.PROJECT),
-            **self.model_dump()
-        } 
+            **data
+        }
 
     @staticmethod
     def from_dynamo(project_data: dict) -> "ProjectDynamoDTO":
