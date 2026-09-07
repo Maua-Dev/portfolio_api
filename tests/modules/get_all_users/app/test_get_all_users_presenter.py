@@ -41,7 +41,6 @@ class TestGetAllUsersPresenter:
         assert first_user['user_id'] == '00000000-0000-0000-0000-000000000001'
         assert first_user['user_email'] == 'soller@maua.br'
         assert first_user['user_role'] == 'Admin'
-        assert 'senha_hash' not in first_user
 
     def test_get_all_users_lambda_handler_success(self):
         event = build_event()

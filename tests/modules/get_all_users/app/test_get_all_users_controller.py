@@ -38,14 +38,12 @@ class TestGetAllUsersController:
         assert first_user['user_id'] == '00000000-0000-0000-0000-000000000001'
         assert first_user['user_email'] == 'soller@maua.br'
         assert first_user['user_role'] == 'Admin'
-        assert 'senha_hash' not in first_user
 
     def test_get_all_users_includes_created_user(self):
         rubio = User(
             id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
             email="rubio@maua.br",
             role=RoleEnum.USER,
-            senha_hash="hash_rubio"
         )
         self.repo.create_user(rubio)
         request = MockHttpRequest(data={})
