@@ -1,80 +1,49 @@
+import uuid
+
 from src.modules.get_user.app.get_user_controller import GetUserController
 from src.modules.get_user.app.get_user_usecase import GetUserUsecase
-from src.shared.helpers.external_interfaces.http_models import HttpRequest
-from src.shared.infra.external.observability.observability_mock import ObservabilityMock
+from src.shared.helpers.enum.http_status_code_enum import HttpStatusCodeEnum
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
-observability = ObservabilityMock(module_name="get_user")
 
-class Test_GetUserController:
-    def test_get_user_controller(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={
-            'user_id': str(repo.users[1].user_id)
-        })
-
-        response = controller(request=request)
-
-        assert response.status_code == 200
-        assert response.body['user_id'] == repo.users[1].user_id
-        assert response.body['name'] == repo.users[1].name
-        assert response.body['email'] == repo.users[1].email
-        assert response.body['state'] == repo.users[1].state.value
-
-    def test_get_user_controller_missing_parameters(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={})
-
-        response = controller(request=request)
-
-        assert response.status_code == 400
-        assert response.body == 'Field user_id is missing'
+class MockHttpRequest:
+    def __init__(self, data: dict):
+        self.data = data
 
 
-    def test_get_user_contoller_wrong_type_parameter(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
+class TestGetUserController:
 
-        request = HttpRequest(query_params={
-            'user_id': 999
-        })
+    def setup_method(self):
+        self.repo = UserRepositoryMock()
+        self.usecase = GetUserUsecase(self.repo)
+        self.controller = GetUserController(self.usecase)
 
-        response = controller(request=request)
+    def test_get_user_success(self):
+        request = MockHttpRequest(data={'user_id': '00000000-0000-0000-0000-000000000001'})
 
-        assert response.status_code == 400
-        assert response.body == "Field user_id isn't in the right type.\n Received: int.\n Expected: str"
+        response = self.controller(request)
 
-    def test_get_user_contoller_entity_error(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
+        assert response.status_code == HttpStatusCodeEnum.OK.value
+        assert response.body['user_id'] == '00000000-0000-0000-0000-000000000001'
+        assert response.body['user_email'] == 'soller@maua.br'
+        assert response.body['user_role'] == 'Admin'
 
-        request = HttpRequest(query_params={
-            'user_id': 'abc'
-        })
+    def test_get_user_missing_user_id(self):
+        request = MockHttpRequest(data={})
+        response = self.controller(request)
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-        response = controller(request=request)
+    def test_get_user_wrong_type(self):
+        request = MockHttpRequest(data={'user_id': 123})
+        response = self.controller(request)
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-        assert response.status_code == 400
-        assert response.body == 'Field user_id is not valid'
+    def test_get_user_invalid_uuid(self):
+        request = MockHttpRequest(data={'user_id': 'not-a-uuid'})
+        response = self.controller(request)
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-    def test_get_user_controller_no_items_found(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={
-            'user_id': str(999)
-        })
-
-        response = controller(request=request)
-
-        assert response.status_code == 404
-        assert response.body == 'No items found for user_id'
+    def test_get_user_not_found(self):
+        request = MockHttpRequest(data={'user_id': str(uuid.uuid4())})
+        response = self.controller(request)
+        assert response.status_code == HttpStatusCodeEnum.NOT_FOUND.value

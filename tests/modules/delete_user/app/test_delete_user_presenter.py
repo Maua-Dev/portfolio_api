@@ -1,70 +1,50 @@
 import json
+import os
+import uuid
 
-from src.modules.delete_user.app.delete_user_presenter import lambda_handler
+os.environ["STAGE"] = "TEST"
+
+from src.modules.delete_user.app.delete_user_presenter import delete_user_presenter, repo
+from src.shared.domain.entities.user import User
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
-class Test_DeleteUserPresenter:
+def build_event(user_id: str = None) -> dict:
+    return {
+        'queryStringParameters': {'user_id': user_id} if user_id else None
+    }
 
-    def test_delete_user(self):
-        event = {
-            "version": "2.0",
-            "routeKey": "$default",
-            "rawPath": "/my/path",
-            "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
-            "cookies": [
-                "cookie1",
-                "cookie2"
-            ],
-            "headers": {
-                "header1": "value1",
-                "header2": "value1,value2"
-            },
-            "queryStringParameters": {
-                "parameter1": "1"
-            },
-            "requestContext": {
-                "accountId": "123456789012",
-                "apiId": "<urlid>",
-                "authentication": None,
-                "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user/example-user",
-                        "userId": "AIDA..."
-                    }
-                },
-                "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
-                "domainPrefix": "<url-id>",
-                "external_interfaces": {
-                    "method": "POST",
-                    "path": "/my/path",
-                    "protocol": "HTTP/1.1",
-                    "sourceIp": "123.123.123.123",
-                    "userAgent": "agent"
-                },
-                "requestId": "id",
-                "routeKey": "$default",
-                "stage": "$default",
-                "time": "12/Mar/2020:19:03:58 +0000",
-                "timeEpoch": 1583348638390
-            },
-            "body": '{"user_id": "1"}',
-            "pathParameters": None,
-            "isBase64Encoded": None,
-            "stageVariables": None
-        }
 
-        response = lambda_handler(event, None)
+class TestDeleteUserPresenter:
 
-        expected = {'user_id': 1,
-                     'name': 'Bruno Soller',
-                     'email': 'soller@soller.com',
-                     'state': 'APPROVED',
-                     'message': 'the user was deleted successfully'}
+    def test_delete_user_presenter_success(self):
+        rubio = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
+            email="rubio@maua.br",
+            role=RoleEnum.ADMIN,
+        )
+        repo.create_user(rubio)
+        event = build_event(user_id='00000000-0000-0000-0000-000000000004')
 
-        assert json.loads(response["body"]) == expected
-        assert response["statusCode"] == 200
+        response = delete_user_presenter(event)
+        body = json.loads(response['body'])
+
+        assert response['statusCode'] == 200
+        assert body['user_id'] == '00000000-0000-0000-0000-000000000004'
+        assert body['user_email'] == 'rubio@maua.br'
+        assert body['user_role'] == 'Admin'
+        assert body['message'] == "the user was deleted successfully"
+
+    def test_delete_user_presenter_delete_twice_returns_not_found(self):
+        event = build_event(user_id='00000000-0000-0000-0000-000000000004')
+
+        response = delete_user_presenter(event)
+
+        assert response['statusCode'] == 404
+
+    def test_delete_user_presenter_missing_id(self):
+        event = build_event()
+
+        response = delete_user_presenter(event)
+
+        assert response['statusCode'] == 400

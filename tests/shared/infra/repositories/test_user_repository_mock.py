@@ -1,75 +1,95 @@
-from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+import uuid
+
 import pytest
+
+from src.shared.domain.entities.user import User
+from src.shared.domain.enums.role_enum import RoleEnum
+from src.shared.helpers.errors.usecase_errors import DuplicatedItem, NoItemsFound
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
 class Test_UserRepositoryMock:
     def test_get_user(self):
         repo = UserRepositoryMock()
-        user = repo.get_user(1)
+        user = repo.get_user(uuid.UUID("00000000-0000-0000-0000-000000000001"))
 
-        assert user.name == "Bruno Soller"
-        assert user.email == "soller@soller.com"
-        assert user.user_id == 1
-        assert user.state == STATE.APPROVED
+        assert user.id == uuid.UUID("00000000-0000-0000-0000-000000000001")
+        assert user.email == "soller@maua.br"
+        assert user.role == RoleEnum.ADMIN
 
     def test_get_user_not_found(self):
         repo = UserRepositoryMock()
+
         with pytest.raises(NoItemsFound):
-            user = repo.get_user(69)
+            repo.get_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
     def test_get_all_user(self):
         repo = UserRepositoryMock()
         users = repo.get_all_user()
+
         assert len(users) == 3
+        assert all(isinstance(user, User) for user in users)
 
     def test_create_user(self):
         repo = UserRepositoryMock()
-        user = User(
-            name="Vitor Soller",
-            email="dohype@vitin.com",
-            user_id=4,
-            state=STATE.PENDING
+        new_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000004"),
+            email="ana@maua.br",
+            role=RoleEnum.ADMIN,
         )
 
-        repo.create_user(user)
+        user = repo.create_user(new_user)
 
-        assert repo.users[3].name == "Vitor Soller"
-        assert repo.users[3].email == "dohype@vitin.com"
-        assert repo.users[3].user_id == 4
-        assert repo.users[3].state == STATE.PENDING
+        assert len(repo.users) == 4
+        assert user == new_user
+        assert repo.users[3].email == "ana@maua.br"
+        assert repo.users[3].role == RoleEnum.ADMIN
 
-        assert repo.user_counter == 4
+    def test_create_user_duplicated(self):
+        repo = UserRepositoryMock()
+        duplicated_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            email="soller@maua.br",
+            role=RoleEnum.ADMIN,
+        )
+
+        with pytest.raises(DuplicatedItem):
+            repo.create_user(duplicated_user)
 
     def test_delete_user(self):
         repo = UserRepositoryMock()
-        user = repo.delete_user(1)
-        assert user.name == "Bruno Soller"
-        assert user.email == "soller@soller.com"
-        assert user.user_id == 1
-        assert user.state == STATE.APPROVED
+        user = repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000001"))
+
+        assert user.email == "soller@maua.br"
+        assert len(repo.users) == 2
 
     def test_delete_user_not_found(self):
         repo = UserRepositoryMock()
+
         with pytest.raises(NoItemsFound):
-            user = repo.delete_user(69)
+            repo.delete_user(uuid.UUID("00000000-0000-0000-0000-000000000069"))
 
     def test_update_user(self):
         repo = UserRepositoryMock()
-        user = repo.update_user(1, "Bruno Guirão")
+        updated_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+            email="brancas@maua.br",
+            role=RoleEnum.ADMIN,
+        )
 
-        assert user.name == "Bruno Guirão"
-        assert repo.users[0].name == "Bruno Guirão"
+        user = repo.update_user(updated_user)
+
+        assert user.role == RoleEnum.ADMIN
+        assert repo.users[1].role == RoleEnum.ADMIN
+        assert repo.users[1].id == uuid.UUID("00000000-0000-0000-0000-000000000002")
 
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()
+        ghost_user = User(
+            id=uuid.UUID("00000000-0000-0000-0000-000000000069"),
+            email="ghost@maua.br",
+            role=RoleEnum.USER,
+        )
+
         with pytest.raises(NoItemsFound):
-            user = repo.update_user(69, "Bruno Guirão")
-
-    def test_get_users_counter(self):
-        repo = UserRepositoryMock()
-
-        assert repo.get_user_counter() == 3
-
+            repo.update_user(ghost_user)

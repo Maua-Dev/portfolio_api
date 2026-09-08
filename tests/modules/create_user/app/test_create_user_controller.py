@@ -1,85 +1,87 @@
 from src.modules.create_user.app.create_user_controller import CreateUserController
 from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
-from src.shared.helpers.external_interfaces.http_models import HttpRequest
+from src.shared.helpers.enum.http_status_code_enum import HttpStatusCodeEnum
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
-class Test_CreateUserControler:
-    def test_create_user_controller(self):
-        repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo=repo)
-        controller = CreateUserController(usecase=usecase)
+class MockHttpRequest:
+    def __init__(self, data: dict):
+        self.data = data
 
-        request = HttpRequest(body={
-            'name': 'Branco do Branco Branco da Silva',
-            'email': 'branco@branco.com'
+
+class Test_CreateUserController:
+
+    def setup_method(self):
+        self.repo = UserRepositoryMock()
+        self.usecase = CreateUserUsecase(self.repo)
+        self.controller = CreateUserController(self.usecase)
+
+    def test_create_user(self):
+        request = MockHttpRequest(data={
+            'email': 'giulia@maua.br',
+            'role': 'Admin'
         })
 
-        response = controller(request=request)
+        response = self.controller(request)
 
-        assert response.status_code == 201
-        assert response.body['user_id'] == repo.users[-1].user_id
-        assert response.body['name'] == repo.users[-1].name
-        assert response.body['email'] == repo.users[-1].email
-        assert response.body['state'] == repo.users[-1].state.value
-        assert response.body['message'] == "the user was created successfully"
+        assert response.status_code == HttpStatusCodeEnum.CREATED.value
+        assert response.body['user_email'] == 'giulia@maua.br'
+        assert response.body['user_role'] == 'Admin'
+        assert response.body['message'] == 'the user was created successfully'
+        assert len(self.repo.users) == 4
 
-    def test_create_user_controller_missing_name(self):
-        repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo=repo)
-        controller = CreateUserController(usecase=usecase)
+    def test_create_user_role_default_is_user(self):
+        request = MockHttpRequest(data={
+            'email': 'giulia@maua.br',
+        })
 
-        request = HttpRequest(body={
-            'email': '21.01444-2@maua.br'})
+        response = self.controller(request)
 
-        response = controller(request=request)
+        assert response.status_code == HttpStatusCodeEnum.CREATED.value
+        assert response.body['user_role'] == 'User'
 
-        assert response.status_code == 400
-        assert response.body == "Field name is missing"
+    def test_create_user_missing_email(self):
+        request = MockHttpRequest(data={})
+        response = self.controller(request)
 
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-    def test_create_user_controller_missing_email(self):
-        repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo=repo)
-        controller = CreateUserController(usecase=usecase)
+    def test_create_user_email_is_not_str(self):
+        request = MockHttpRequest(data={'email': 123})
+        response = self.controller(request)
 
-        request = HttpRequest(body={
-            'name': 'Branco do Branco Branco da Silva'})
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-        response = controller(request=request)
+    def test_create_user_email_is_not_valid(self):
+        request = MockHttpRequest(data={
+            'email': 'isso_nao_e_email',
+        })
+        response = self.controller(request)
 
-        assert response.status_code == 400
-        assert response.body == "Field email is missing"
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-    def test_create_user_controller_invalid_email(self):
-        repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo=repo)
-        controller = CreateUserController(usecase=usecase)
+    def test_create_user_role_is_not_valid(self):
+        request = MockHttpRequest(data={
+            'email': 'giulia@maua.br',
+            'role': 'Superuser'
+        })
+        response = self.controller(request)
 
-        request = HttpRequest(body={
-            'name': 'Branco do Branco Branco da Silva',
-            'email': 'branco@branco'})
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-        response = controller(request=request)
+    def test_create_user_role_is_not_str(self):
+        request = MockHttpRequest(data={
+            'email': 'giulia@maua.br',
+            'role': 123
+        })
+        response = self.controller(request)
 
-        assert response.status_code == 400
-        assert response.body == "Field email is not valid"
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
 
-    def test_create_user_controller_invalid_name(self):
-        repo = UserRepositoryMock()
-        usecase = CreateUserUsecase(repo=repo)
-        controller = CreateUserController(usecase=usecase)
+    def test_create_user_already_exists(self):
+        request = MockHttpRequest(data={
+            'email': 'soller@maua.br',
+        })
+        response = self.controller(request)
 
-        request = HttpRequest(body={
-            'name': 'B',
-            'email': 'branco@branco.com'})
-
-        response = controller(request=request)
-
-        assert response.status_code == 400
-        assert response.body == "Field name is not valid"
-
-
-
-
-
+        assert response.status_code == HttpStatusCodeEnum.CONFLICT.value

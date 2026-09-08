@@ -1,22 +1,38 @@
+import uuid
+
 from src.modules.get_user.app.get_user_viewmodel import GetUserViewmodel
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
-class Test_GetUserViewModel:
-    def test_get_user_viewmodel(self):
+class TestGetUserViewmodel:
+
+    def test_to_dict(self):
         user = User(
-            user_id=1,
-            name="Vitor Soller",
-            email="vitinho@hype.com",
-            state=STATE.APPROVED
+            id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            email="soller@maua.br",
+            role=RoleEnum.ADMIN,
         )
-        userViewmodel = GetUserViewmodel(user=user).to_dict()
 
-        expected = {'user_id': 1,
-                    'name': 'Vitor Soller',
-                    'email': 'vitinho@hype.com',
-                    'state': 'APPROVED',
-                    'message': 'the user was retrieved successfully'}
+        viewmodel = GetUserViewmodel(user)
+        result = viewmodel.to_dict()
 
-        assert expected == userViewmodel
+        assert result == {
+            'user_id': '00000000-0000-0000-0000-000000000001',
+            'user_email': 'soller@maua.br',
+            'user_role': 'Admin',
+            'message': "the user was retrieved successfully"
+        }
+
+    def test_user_id_is_string(self):
+        user = User(
+            id=uuid.uuid4(),
+            email="brancas@maua.br",
+            role=RoleEnum.USER,
+        )
+
+        viewmodel = GetUserViewmodel(user)
+        result = viewmodel.to_dict()
+
+        assert isinstance(viewmodel.user_id, str)
+        assert result['user_role'] == 'User'
