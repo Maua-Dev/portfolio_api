@@ -10,10 +10,14 @@ usecase = GetAllUsersUsecase(repo)
 controller = GetAllUsersController(usecase)
 
 
-@observed_handler("get_all_users")
-def lambda_handler(event, context):
+def get_all_users_presenter(event):
     httpRequest = LambdaHttpRequest(data=event)
     response = controller(httpRequest)
     httpResponse = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
-
     return httpResponse.toDict()
+
+
+@observed_handler("get_all_users")
+def lambda_handler(event, context):
+    response = get_all_users_presenter(event)
+    return response
