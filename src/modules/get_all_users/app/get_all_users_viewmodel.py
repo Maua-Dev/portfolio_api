@@ -4,18 +4,20 @@ from src.shared.domain.entities.user import User
 
 
 class UserViewmodel:
+    user_id: str
+    user_email: str
+    user_role: str
+
     def __init__(self, user: User):
-        self.state = user.state
-        self.email = user.email
-        self.name = user.name
-        self.user_id = user.user_id
+        self.user_id = str(user.id)
+        self.user_email = user.email
+        self.user_role = user.role
 
     def to_dict(self):
         return {
             'user_id': self.user_id,
-            'name': self.name,
-            'email': self.email,
-            'state': self.state.value
+            'user_email': self.user_email,
+            'user_role': self.user_role
         }
 
 
@@ -25,6 +27,6 @@ class GetAllUsersViewmodel:
 
     def to_dict(self):
         return {
-            "all_users": [viewmodel.to_dict() for viewmodel in self.users_viewmodel_list],
-            "message": "all users has been retrieved"
+            'all_users': [viewmodel.to_dict() for viewmodel in self.users_viewmodel_list],
+            'message': "all users were retrieved successfully"
         }

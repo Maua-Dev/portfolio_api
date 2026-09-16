@@ -1,11 +1,12 @@
+import os
 import json
+os.environ["STAGE"] = "TEST"
+from src.modules.create_project.app.create_project_presenter import lambda_handler
 
-from src.modules.update_user.app.update_user_presenter import lambda_handler
 
+class TestCreateProjectPresenter:
 
-class Test_UpdateUserPresenter:
-
-    def test_update_user(self):
+    def test_create_project(self):
         event = {
             "version": "2.0",
             "routeKey": "$default",
@@ -52,7 +53,14 @@ class Test_UpdateUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "1",  "new_name": "João Soller"}',
+            "body": json.dumps({
+                "title": "Projeto Teste 1",
+                "description": "Descrição projeto teste 1",
+                "cell_image": "imagem.jpeg",
+                "tech_frontend": "React",
+                "tech_backend": "Node.js",
+                "color": "#FFFFFF"
+            }),
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -60,6 +68,5 @@ class Test_UpdateUserPresenter:
 
         response = lambda_handler(event, None)
 
-
-        assert response["statusCode"] == 200
-        assert json.loads(response["body"])['name'] == 'João Soller'
+        assert response["statusCode"] == 201
+        assert json.loads(response["body"])["message"] == "the project was created successfully"

@@ -1,64 +1,64 @@
-from src.modules.get_all_users.app.get_all_users_viewmodel import GetAllUsersViewmodel, UserViewmodel
+import uuid
+
+from src.modules.get_all_users.app.get_all_users_viewmodel import GetAllUsersViewmodel
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.role_enum import RoleEnum
 
 
-class Test_GetAllUsersViewmodel:
-    all_users_list = [
-        User(user_id=1,
-             name="Lucas Duez",
-             email="deuzexmachina@gmail.com",
-             state=STATE.APPROVED),
+class TestGetAllUsersViewmodel:
 
-        User(user_id=2,
-             name="Laura Blablachan",
-             email="laurinha@gmail.com",
-             state=STATE.APPROVED),
-    ]
+    def test_to_dict(self):
+        users = [
+            User(
+                id=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+                email="rubio@maua.br",
+                role=RoleEnum.ADMIN,
+            ),
+            User(
+                id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+                email="sakamoto@maua.br",
+                role=RoleEnum.USER,
+            )
+        ]
 
-    def test_get_all_users_viewmodel(self):
-        viewmodel = GetAllUsersViewmodel(self.all_users_list)
+        viewmodel = GetAllUsersViewmodel(users)
+        result = viewmodel.to_dict()
 
-        expected = {
-            "all_users": [
+        assert result == {
+            'all_users': [
                 {
-                    'user_id': 1,
-                    'name': "Lucas Duez",
-                    'email': "deuzexmachina@gmail.com",
-                    'state': 'APPROVED',
+                    'user_id': '00000000-0000-0000-0000-000000000001',
+                    'user_email': 'rubio@maua.br',
+                    'user_role': 'Admin'
                 },
                 {
-                    'user_id': 2,
-                    'name': "Laura Blablachan",
-                    'email': "laurinha@gmail.com",
-                    'state': 'APPROVED',
+                    'user_id': '00000000-0000-0000-0000-000000000002',
+                    'user_email': 'sakamoto@maua.br',
+                    'user_role': 'User'
                 }
             ],
-            "message": "all users has been retrieved"
+            'message': "all users were retrieved successfully"
         }
 
-        response = viewmodel.to_dict()
+    def test_to_dict_empty_list(self):
+        viewmodel = GetAllUsersViewmodel([])
+        result = viewmodel.to_dict()
 
-        assert response == expected
-
-    def test_user_viewmodel(self):
-        viewmodel = UserViewmodel(
-            User(user_id=2,
-                 name="Laura Blablachan",
-                 email="laurinha@gmail.com",
-                 state=STATE.APPROVED),
-)
-
-        response = viewmodel.to_dict()
-
-        expected = {
-                    'user_id': 2,
-                    'name': "Laura Blablachan",
-                    'email': "laurinha@gmail.com",
-                    'state': 'APPROVED',
+        assert result == {
+            'all_users': [],
+            'message': "all users were retrieved successfully"
         }
 
-        assert response == expected
+    def test_user_id_is_string(self):
+        users = [
+            User(
+                id=uuid.uuid4(),
+                email="sakamoto@maua.br",
+                role=RoleEnum.USER,
+            )
+        ]
 
+        viewmodel = GetAllUsersViewmodel(users)
+        result = viewmodel.to_dict()
 
-    
+        assert isinstance(result['all_users'][0]['user_id'], str)
