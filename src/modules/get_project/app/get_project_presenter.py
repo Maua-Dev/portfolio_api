@@ -1,23 +1,24 @@
-from .get_all_users_controller import GetAllUsersController
-from .get_all_users_usecase import GetAllUsersUsecase
-from src.shared.domain.repositories.user_repository_interface import IUserRepository
+
+from src.modules.get_project.app.get_project_controller import GetProjectController
+from src.modules.get_project.app.get_project_usecase import GetProjectUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 from src.shared.helpers.observability.wrap_handler import observed_handler
 
-repo: IUserRepository = Environments.get_user_repo()()
-usecase = GetAllUsersUsecase(repo)
-controller = GetAllUsersController(usecase)
+
+repo = Environments.get_project_repo()()
+usecase = GetProjectUsecase(repo)
+controller = GetProjectController(usecase)
 
 
-def get_all_users_presenter(event):
+def get_project_presenter(event):
     httpRequest = LambdaHttpRequest(data=event)
     response = controller(httpRequest)
     httpResponse = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
     return httpResponse.toDict()
 
 
-@observed_handler("get_all_users")
+@observed_handler("get_project")
 def lambda_handler(event, context):
-    response = get_all_users_presenter(event)
+    response = get_project_presenter(event)
     return response
