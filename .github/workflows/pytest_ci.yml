@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  testApp:
+    uses: maua-dev/ci_workflows_reusable/.github/workflows/pytest_ci_313.yml@V1.3
+
+  cdkSynth:
+    if: >
+      github.event_name == 'push' && (
+        github.ref_name == 'dev' ||
+        github.ref_name == 'homolog' ||
+        github.ref_name == 'prod' ||
+        startsWith(github.ref_name, 'infra/')
+      )
+    uses: ./.github/workflows/cdk_synth_ci.yml
