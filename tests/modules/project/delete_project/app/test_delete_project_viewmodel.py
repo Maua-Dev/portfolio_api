@@ -1,4 +1,4 @@
-from src.modules.delete_project.app.delete_project_viewmodel import DeleteProjectViewmodel
+from src.modules.project.delete_project.app.delete_project_viewmodel import DeleteProjectViewmodel
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
 
 class TestDeleteProjectViewmodel:

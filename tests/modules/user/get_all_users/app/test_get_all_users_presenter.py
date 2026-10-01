@@ -3,7 +3,7 @@ import os
 
 os.environ["STAGE"] = "TEST"
 
-from src.modules.get_all_users.app.get_all_users_presenter import get_all_users_presenter, lambda_handler
+from src.modules.user.get_all_users.app.get_all_users_presenter import get_all_users_presenter, lambda_handler
 
 
 def build_event() -> dict:

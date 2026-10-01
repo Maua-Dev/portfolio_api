@@ -1,7 +1,7 @@
 import uuid
 
-from src.modules.get_project.app.get_project_controller import GetProjectController
-from src.modules.get_project.app.get_project_usecase import GetProjectUsecase
+from src.modules.project.get_project.app.get_project_controller import GetProjectController
+from src.modules.project.get_project.app.get_project_usecase import GetProjectUsecase
 from src.shared.helpers.enum.http_status_code_enum import HttpStatusCodeEnum
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
 

@@ -3,8 +3,8 @@ import os
 
 os.environ["STAGE"] = "TEST"
 
-from src.modules.get_project.app import get_project_presenter as presenter_module
-from src.modules.get_project.app.get_project_presenter import get_project_presenter
+from src.modules.project.get_project.app import get_project_presenter as presenter_module
+from src.modules.project.get_project.app.get_project_presenter import get_project_presenter
 
 
 def build_event(project_id: str = None) -> dict:

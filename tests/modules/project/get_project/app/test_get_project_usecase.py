@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from src.modules.get_project.app.get_project_usecase import GetProjectUsecase
+from src.modules.project.get_project.app.get_project_usecase import GetProjectUsecase
 from src.shared.domain.entities.project import Project
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound

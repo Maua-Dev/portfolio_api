@@ -1,5 +1,5 @@
-from src.modules.delete_project.app.delete_project_controller import DeleteProjectController
-from src.modules.delete_project.app.delete_project_usecase import DeleteProjectUsecase
+from src.modules.project.delete_project.app.delete_project_controller import DeleteProjectController
+from src.modules.project.delete_project.app.delete_project_usecase import DeleteProjectUsecase
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 from src.shared.helpers.external_interfaces.http_models import HttpRequest

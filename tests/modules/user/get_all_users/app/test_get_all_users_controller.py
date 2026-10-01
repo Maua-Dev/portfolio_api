@@ -1,7 +1,7 @@
 import uuid
 
-from src.modules.get_all_users.app.get_all_users_controller import GetAllUsersController
-from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
+from src.modules.user.get_all_users.app.get_all_users_controller import GetAllUsersController
+from src.modules.user.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.enum.http_status_code_enum import HttpStatusCodeEnum

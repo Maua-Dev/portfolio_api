@@ -1,7 +1,7 @@
 import os
 import json
 os.environ["STAGE"] = "TEST"
-from src.modules.delete_project.app.delete_project_presenter import lambda_handler, repo, user_repo
+from src.modules.project.delete_project.app.delete_project_presenter import lambda_handler, repo, user_repo
 
 
 class TestDeleteProjectPresenter:

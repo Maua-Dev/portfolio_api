@@ -1,6 +1,6 @@
 
-from src.modules.get_project.app.get_project_controller import GetProjectController
-from src.modules.get_project.app.get_project_usecase import GetProjectUsecase
+from .get_project_controller import GetProjectController
+from .get_project_usecase import GetProjectUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 from src.shared.helpers.observability.wrap_handler import observed_handler

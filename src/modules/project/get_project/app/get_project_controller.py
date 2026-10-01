@@ -1,7 +1,7 @@
 import uuid
 
-from src.modules.get_project.app.get_project_usecase import GetProjectUsecase
-from src.modules.get_project.app.get_project_viewmodel import GetProjectViewmodel
+from .get_project_usecase import GetProjectUsecase
+from .get_project_viewmodel import GetProjectViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
