@@ -1,0 +1,1 @@
+from .app.get_all_projects_presenter import lambda_handler
