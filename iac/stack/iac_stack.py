@@ -13,28 +13,28 @@ from components.ssm_construct import SsmConstruct
 class IacStack(Stack):
 
     def __init__(
-        self, 
+        self,
         scope: Construct,
         stack_id: str,
         stack_name: str,
         stage: str,
         **kwargs
     ) -> None:
-        
+
         super().__init__(scope, stack_id, **kwargs)
 
         self.github_ref_name = os.environ.get("GITHUB_REF_NAME", "")
         self.aws_region = os.environ.get("AWS_REGION")
 
         self.apigw_construct = ApigwConstruct(
-            self, 
-            construct_id=f"Apigw", 
+            self,
+            construct_id=f"Apigw",
             stage=stage
         )
-        
+
         self.s3_construct = S3Construct(
-            self, 
-            construct_id=f"S3", 
+            self,
+            construct_id=f"S3",
             stage=stage
         )
 
@@ -54,6 +54,11 @@ class IacStack(Stack):
             "DYNAMO_SORT_KEY": "sk",
             "MSS_NAME": stack_name,
             "ENTITY_ASSETS_BUCKET_NAME": self.s3_construct.entity_assets_bucket.bucket_name,
+            "GRAPH_MICROSOFT_ENDPOINT": (
+                os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
+                or os.environ.get("MS_GRAPH_ENDPOINT")
+                or "https://graph.microsoft.com/v1.0/me"
+            ),
         }
 
         self.lambda_construct = LambdaConstruct(
@@ -64,27 +69,27 @@ class IacStack(Stack):
             stack_name=stack_name,
             environment_variables=ENVIRONMENT_VARIABLES
         )
-        
+
         for function in self.lambda_construct.funtions_that_need_dynamo_db_access:
             self.dynamo_construct.portfolio_table.grant_read_write_data(function)
-            
+
         for function in self.lambda_construct.functions_that_need_s3_access:
             self.s3_construct.entity_assets_bucket.grant_read_write(function)
-       
-        
+
+
         # instância SSM manager para passar automaticamente variáveis a um hub de segredos
         # da prórpia conta, evitando ter que manualmente passa-las para o github secrets
-        
+
         # isso evita problemas de discrepância nos endpoints
-        
-        # atenção aqui, isso deve suprir ao que estamos precisando / pegando de variáveis de 
+
+        # atenção aqui, isso deve suprir ao que estamos precisando / pegando de variáveis de
         # ambiente no CD do front
-        
+
         # nesse projeto nao vamos passar cdn pois o acesso vai vir pela entidade retornada ao
         # inves de um link fixo tipo no antigo dev medias
-        
+
         self.ssm_construct = SsmConstruct(
-            self, 
+            self,
             construct_id=f"Ssm",
             mss_name_identification_for_path="portfolio",
             api=self.apigw_construct.rest_api,

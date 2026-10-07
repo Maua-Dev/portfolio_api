@@ -2,6 +2,7 @@ from typing import List
 from uuid import UUID
 
 from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
@@ -46,29 +47,43 @@ class UserRepositoryDynamo(IUserRepository):
 
         return UserDynamoDTO.from_dynamo_to_entity(resp["Item"])
 
-    def get_all_user(self) -> List[User]:
-        resp = self.dynamo.query(
-            key_condition_expression=Key(PK_ATTR).eq(self._pk()),
-        )
+    def get_user_by_email(self, email: str) -> User:
+        normalized = email.strip().casefold()
+        for user in self.get_all_user():
+            if user.email.strip().casefold() == normalized:
+                return user
+        raise NoItemsFound("email")
 
-        return [
-            UserDynamoDTO.from_dynamo_to_entity(item)
-            for item in resp.get("Items", [])
-        ]
+    def get_all_user(self) -> List[User]:
+        users = []
+        query_options = {"ConsistentRead": True}
+        while True:
+            response = self.dynamo.query(
+                key_condition_expression=Key(PK_ATTR).eq(self._pk()),
+                **query_options,
+            )
+            users.extend(
+                UserDynamoDTO.from_dynamo_to_entity(item)
+                for item in response.get("Items", [])
+            )
+            last_key = response.get("LastEvaluatedKey")
+            if not last_key:
+                return users
+            query_options["ExclusiveStartKey"] = last_key
 
     def create_user(self, new_user: User) -> User:
-        existing = self.dynamo.get_item(
-            partition_key=self._pk(),
-            sort_key=self._sk(new_user.id),
-        )
-        if existing.get("Item") is not None:
-            raise DuplicatedItem("user")
-
-        self.dynamo.put_item(
-            item=UserDynamoDTO.from_entity_to_dynamo(new_user),
-            partition_key=self._pk(),
-            sort_key=self._sk(new_user.id),
-        )
+        # O ID Microsoft é estável. Uma gravação concorrente não pode
+        # sobrescrever um cadastro existente, inclusive sua role.
+        try:
+            self.dynamo.dynamo_table.put_item(
+                Item=UserDynamoDTO.from_entity_to_dynamo(new_user),
+                ConditionExpression="attribute_not_exists(#pk)",
+                ExpressionAttributeNames={"#pk": PK_ATTR},
+            )
+        except ClientError as err:
+            if err.response["Error"]["Code"] == "ConditionalCheckFailedException":
+                raise DuplicatedItem("user") from err
+            raise
         return new_user
 
     def delete_user(self, id: UUID) -> User:
