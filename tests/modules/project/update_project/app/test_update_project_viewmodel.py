@@ -29,6 +29,6 @@ class TestUpdateProjectViewmodel:
             'project_cell_image': "imagem_teste1.jpeg",
             'project_tech_frontend': "React",
             'project_tech_backend': "Python",
-            'project_color': "white",
+            'project_color': "#fff",
             'message': "the project was updated successfully"
         }

@@ -1,3 +1,4 @@
+from types import coroutine
 import uuid
 
 from .update_project_usecase import UpdateProjectUsecase
@@ -87,7 +88,7 @@ class UpdateProjectController:
                 cell_image = cell_image,
                 tech_frontend = tech_frontend,
                 tech_backend = tech_backend,
-                color = Color(color) if color is not None else None
+                color = color
             )
 
             viewmodel = UpdateProjectViewmodel(project)

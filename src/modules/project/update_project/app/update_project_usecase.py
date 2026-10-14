@@ -18,6 +18,13 @@ class UpdateProjectUsecase:
             raise EntityError("project_id")
         
         project = self.repo.get_project(project_id=project_id)
+        
+        
+        if color is not None:               
+            try:
+                color = Color(color)
+            except ValueError:
+                raise EntityError("color")
 
         updated_project = Project(
             id = project.id,

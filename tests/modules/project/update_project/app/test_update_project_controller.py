@@ -43,6 +43,7 @@ class TestUpdateProjectController:
         assert response.body["project_cell_image"] == "novo.jpeg"
         assert response.body["project_tech_frontend"] == "Vue"
         assert response.body["project_tech_backend"] == "Node"
+        assert response.body["project_color"] == "#123456"
 
 
     def test_update_project_missing_project_id(self):
@@ -76,3 +77,26 @@ class TestUpdateProjectController:
         response = self.controller(request)
 
         assert response.status_code == HttpStatusCodeEnum.NOT_FOUND.value
+     
+        
+    def test_update_project_invalid_uuid(self):
+        data = {
+            "project_id": "not-a-uuid"
+        }
+
+        request = MockHttpRequest(data = data)
+        response = self.controller(request)
+
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value
+
+
+    def test_update_project_invalid_color(self):
+        data = {
+            "project_id": str(self.repo.projects[0].id),
+            "color": "xyz"
+        }
+
+        request = MockHttpRequest(data = data)
+        response = self.controller(request)
+
+        assert response.status_code == HttpStatusCodeEnum.BAD_REQUEST.value

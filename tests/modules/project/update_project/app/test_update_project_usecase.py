@@ -27,7 +27,7 @@ class TestUpdateProjectUsecase:
             cell_image = "novo.jpeg",
             tech_frontend = "Vue",
             tech_backend = "Node",
-            color = Color("#123456")
+            color = "#123456"
         )
 
         assert isinstance(updated_project, Project)
@@ -38,6 +38,7 @@ class TestUpdateProjectUsecase:
         assert updated_project.tech_frontend == "Vue"
         assert updated_project.tech_backend == "Node"
         assert updated_project.color == Color("#123456")
+
 
     def test_update_project_wrong_type(self):
         repo = ProjectRepositoryMock()
@@ -53,3 +54,33 @@ class TestUpdateProjectUsecase:
 
         with pytest.raises(NoItemsFound):
             usecase(project_id = uuid.uuid4())
+         
+            
+    def test_update_project_partial(self):
+        repo = ProjectRepositoryMock()
+        usecase = UpdateProjectUsecase(repo)
+        original = repo.projects[0]
+
+        project_id = original.id
+        old_description = original.description
+        old_cell_image = original.cell_image
+        old_tech_frontend = original.tech_frontend
+        old_tech_backend = original.tech_backend
+        old_color = original.color
+
+        updated_project = usecase(project_id = project_id, title = "título mudou")
+
+        assert updated_project.title == "título mudou"
+        assert updated_project.description == old_description
+        assert updated_project.cell_image == old_cell_image
+        assert updated_project.tech_frontend == old_tech_frontend
+        assert updated_project.tech_backend == old_tech_backend
+        assert updated_project.color == old_color
+
+
+    def test_update_project_invalid_color(self):
+        repo = ProjectRepositoryMock()
+        usecase = UpdateProjectUsecase(repo)
+
+        with pytest.raises(EntityError):
+            usecase(project_id = repo.projects[0].id, color = "xyz")

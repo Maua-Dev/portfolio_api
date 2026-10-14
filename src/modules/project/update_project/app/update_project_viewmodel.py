@@ -29,6 +29,6 @@ class UpdateProjectViewmodel:
             'project_cell_image': self.project_cell_image,
             'project_tech_frontend': self.project_tech_frontend,
             'project_tech_backend': self.project_tech_backend,
-            'project_color': str(self.project_color),
+            'project_color': self.project_color.as_hex(),
             'message': "the project was updated successfully"
         }
