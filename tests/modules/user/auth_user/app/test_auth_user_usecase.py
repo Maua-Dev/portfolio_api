@@ -36,13 +36,17 @@ def test_repeated_login_does_not_duplicate():
 
 def test_existing_admin_keeps_id_and_role():
     repo = UserRepositoryMock()
+    admin_id = str(repo.users[0].id)
+
     user, created = AuthUserUsecase(repo)({
         **CLAIMS,
+        "sub": admin_id,
         "mail": " SOLLER@MAUA.BR ",
         "role": "User",
     })
+
     assert user == repo.users[0]
-    assert str(user.id) != CLAIMS["sub"]
+    assert user.id == repo.users[0].id
     assert user.role == "Admin"
     assert created is False
 

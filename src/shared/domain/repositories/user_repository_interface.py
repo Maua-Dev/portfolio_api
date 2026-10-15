@@ -15,11 +15,6 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_user_by_email(self, email: str) -> User:
-        """Retorna o usuário ou lança NoItemsFound."""
-        pass
-
-    @abstractmethod
     def get_all_user(self) -> List[User]:
         pass
 

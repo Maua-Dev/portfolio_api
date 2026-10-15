@@ -1,6 +1,6 @@
 from typing import List
 from uuid import UUID
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.shared.domain.entities.project import Project
 from src.shared.domain.repositories.project_repository_interface import IProjectRepository
 from src.shared.helpers.errors.usecase_errors import (NoItemsFound, DuplicatedItem)
@@ -13,7 +13,7 @@ class ProjectRepositoryMock(IProjectRepository):
             Project(
                 title="Projeto Teste 1",
                 description="Descrição projeto teste 1",
-                cell_image="imagem_teste1.jpeg",  
+                cell_image="imagem_teste1.jpeg",
                 tech_frontend="React",
                 tech_backend="Python",
                 color=Color("#FFFFFF")

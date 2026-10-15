@@ -47,13 +47,6 @@ class UserRepositoryDynamo(IUserRepository):
 
         return UserDynamoDTO.from_dynamo_to_entity(resp["Item"])
 
-    def get_user_by_email(self, email: str) -> User:
-        normalized = email.strip().casefold()
-        for user in self.get_all_user():
-            if user.email.strip().casefold() == normalized:
-                return user
-        raise NoItemsFound("email")
-
     def get_all_user(self) -> List[User]:
         users = []
         query_options = {"ConsistentRead": True}

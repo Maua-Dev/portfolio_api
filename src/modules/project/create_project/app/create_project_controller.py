@@ -1,4 +1,4 @@
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.shared.helpers.errors.controller_errors import (MissingParameters, WrongTypeParameter)
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound

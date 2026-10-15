@@ -16,26 +16,32 @@ def make_repo():
     return repo
 
 
-def test_email_lookup_follows_all_dynamo_pages():
+def test_get_user_by_id():
     repo = make_repo()
     user = User(email="leo@maua.br", role="Admin")
-    last_key = {"pk": "USER", "sk": "USER#previous"}
-    repo.dynamo.query.side_effect = [
-        {"Items": [], "LastEvaluatedKey": last_key},
-        {"Items": [UserDynamoDTO.from_entity_to_dynamo(user)]},
-    ]
-    assert repo.get_user_by_email("LEO@MAUA.BR") == user
-    calls = repo.dynamo.query.call_args_list
-    assert len(calls) == 2
-    assert calls[0].kwargs["ConsistentRead"] is True
-    assert calls[1].kwargs["ExclusiveStartKey"] == last_key
+    repo.dynamo.get_item.return_value = {
+        "Item": UserDynamoDTO.from_entity_to_dynamo(user)
+    }
+
+    assert repo.get_user(user.id) == user
+    repo.dynamo.get_item.assert_called_once_with(
+        partition_key=repo._pk(),
+        sort_key=repo._sk(user.id),
+    )
 
 
-def test_email_not_found():
+def test_get_user_by_id_not_found():
     repo = make_repo()
-    repo.dynamo.query.return_value = {"Items": []}
+    user = User(email="missing@maua.br")
+    repo.dynamo.get_item.return_value = {}
+
     with pytest.raises(NoItemsFound):
-        repo.get_user_by_email("missing@maua.br")
+        repo.get_user(user.id)
+
+    repo.dynamo.get_item.assert_called_once_with(
+        partition_key=repo._pk(),
+        sort_key=repo._sk(user.id),
+    )
 
 
 def test_create_uses_conditional_write():

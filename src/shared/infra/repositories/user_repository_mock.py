@@ -36,19 +36,12 @@ class UserRepositoryMock(IUserRepository):
 
         raise NoItemsFound("id")
 
-    def get_user_by_email(self, email: str) -> User:
-        normalized = email.strip().casefold()
-        for user in self.users:
-            if user.email.strip().casefold() == normalized:
-                return user
-        raise NoItemsFound("email")
-
     def get_all_user(self) -> List[User]:
         return self.users
 
     def create_user(self, new_user: User) -> User:
         for user in self.users:
-            if user.id == new_user.id or user.email == new_user.email:
+            if user.id == new_user.id:
                 raise DuplicatedItem("user")
 
         self.users.append(new_user)

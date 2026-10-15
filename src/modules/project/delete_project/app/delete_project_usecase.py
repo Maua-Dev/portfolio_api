@@ -14,17 +14,19 @@ class DeleteProjectUsecase:
         self.user_repo = user_repo
 
     def __call__(self, project_id: str, user_from_authorizer: dict) -> Project:
-        mail = user_from_authorizer.get("mail")
+        user_id = user_from_authorizer.get("sub")
+
+        # Compatibilidade com chamadas internas que ainda usam user_id.
+        if not isinstance(user_id, str) or not user_id.strip():
+            user_id = user_from_authorizer.get("user_id")
+
         try:
-            if isinstance(mail, str) and mail.strip():
-                # O sub Microsoft pode diferir do ID de um cadastro antigo.
-                requester = self.user_repo.get_user_by_email(mail)
-            else:
-                # Compatibilidade com os testes e chamadas internas existentes.
-                user_id = user_from_authorizer.get("user_id")
-                if not user_id:
-                    raise ForbiddenAction("user")
-                requester = self.user_repo.get_user(id=uuid.UUID(user_id))
+            if not isinstance(user_id, str) or not user_id.strip():
+                raise ForbiddenAction("user")
+
+            requester = self.user_repo.get_user(
+                id=uuid.UUID(user_id.strip())
+            )
         except (NoItemsFound, ValueError, TypeError):
             raise ForbiddenAction("user") from None
 

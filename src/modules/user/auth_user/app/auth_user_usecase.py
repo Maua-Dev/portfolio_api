@@ -34,8 +34,9 @@ class AuthUserUsecase:
             raise EntityError("mail")
 
         try:
+            user_id = UUID(sub.strip())
             new_user = User(
-                id=UUID(sub.strip()),
+                id=user_id,
                 email=mail,
                 role=RoleEnum.USER,
             )
@@ -43,13 +44,13 @@ class AuthUserUsecase:
             raise EntityError("user_from_authorizer") from None
 
         try:
-            # Preserva ID e role de usuários já cadastrados.
-            return self.repo.get_user_by_email(new_user.email), False
+            # A identidade do usuário é o ID, não o e-mail.
+            return self.repo.get_user(user_id), False
         except NoItemsFound:
             pass
 
         try:
             return self.repo.create_user(new_user), True
         except DuplicatedItem:
-            # Outra chamada pode ter cadastrado o mesmo usuário neste intervalo.
-            return self.repo.get_user_by_email(new_user.email), False
+            # Em caso de concorrência, buscar novamente pelo mesmo ID.
+            return self.repo.get_user(user_id), False
