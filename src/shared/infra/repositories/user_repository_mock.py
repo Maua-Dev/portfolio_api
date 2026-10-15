@@ -41,7 +41,7 @@ class UserRepositoryMock(IUserRepository):
 
     def create_user(self, new_user: User) -> User:
         for user in self.users:
-            if user.id == new_user.id:
+            if user.id == new_user.id or user.email == new_user.email:
                 raise DuplicatedItem("user")
 
         self.users.append(new_user)
