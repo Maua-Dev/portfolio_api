@@ -1,58 +1,50 @@
-
 import re
+from uuid import UUID
 
-from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.auth.authorizer_user import build_authorizer_user_context
 from src.shared.helpers.auth.iam_policy import generate_policy
-from src.shared.helpers.errors.usecase_errors import NoUsersFound
 from src.shared.infra.external.microsoft.graph_client import MicrosoftGraphClient
-
-# Routes where the user may not exist in our DB yet (first login / self-registration).
-# Does not apply to this repo yet
-# _ONBOARDING_PATH_MARKERS = ("/auth",)
-
-_MAUA_EMAIL_REGEX = re.compile(r"^[^@\s]+@maua\.br$", re.IGNORECASE)
 
 
 class MicrosoftAuthorizerUsecase:
-    def __init__(
-        self,
-        graph_client: MicrosoftGraphClient,
-        user_repo: IUserRepository,
-    ):
+    def __init__(self, graph_client: MicrosoftGraphClient):
         self.graph_client = graph_client
-        self.user_repo = user_repo
 
     def __call__(self, authorization_token: str, method_arn: str) -> dict:
-        token = authorization_token.replace("Bearer ", "", 1).strip()
-        profile = self.graph_client.get_user_profile(token)
+        if not isinstance(authorization_token, str):
+            raise ValueError("Authorization inválido")
 
-        sub = str(profile.get("id") or "").strip()
-        mail = self._extract_email(profile)
-        name = str(profile.get("displayName") or profile.get("name") or "").strip()
+        match = re.fullmatch(r"Bearer\s+(\S+)", authorization_token.strip(), re.IGNORECASE)
+        if match is None:
+            raise ValueError("Bearer token ausente ou inválido")
 
-        if not sub or not mail or not _MAUA_EMAIL_REGEX.match(mail):
+        profile = self.graph_client.get_user_profile(match.group(1))
+        sub = profile.get("id")
+        mail = profile.get("mail") or profile.get("userPrincipalName")
+        name = profile.get("displayName") or ""
+
+        if not isinstance(sub, str) or not isinstance(mail, str):
             return generate_policy("user", "Deny", method_arn)
 
-        # if not self._is_onboarding_route(method_arn):
-        #     try:
-        #         self.user_repo.get_user_by_email(mail)
-        #     except NoUsersFound:
-        #         return generate_policy("user", "Deny", method_arn)
+        sub = sub.strip()
+        mail = mail.strip().lower()
 
-        # context só com claims Microsoft → LambdaHttpRequest.data["user_from_authorizer"]
+        try:
+            sub = str(UUID(sub))
+        except ValueError:
+            return generate_policy("user", "Deny", method_arn)
+
+        if re.fullmatch(r"[^@\s]+@maua\.br", mail) is None:
+            return generate_policy("user", "Deny", method_arn)
+
+        if not isinstance(name, str):
+            name = ""
+
         return generate_policy(
             principal_id=sub,
             effect="Allow",
             method_arn=method_arn,
-            context=build_authorizer_user_context(sub=sub, mail=mail, name=name),
+            context=build_authorizer_user_context(
+                sub=sub, mail=mail, name=name.strip()
+            ),
         )
-
-    @staticmethod
-    def _extract_email(user_data: dict) -> str:
-        # Graph may return mail empty; UPN is a common fallback for org accounts.
-        return (user_data.get("mail") or user_data.get("userPrincipalName") or "").strip()
-
-    # @staticmethod
-    # def _is_onboarding_route(method_arn: str) -> bool:
-    #     return any(marker in method_arn for marker in _ONBOARDING_PATH_MARKERS)

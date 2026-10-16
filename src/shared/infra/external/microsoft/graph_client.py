@@ -5,31 +5,29 @@ import urllib3
 
 
 class MicrosoftGraphClient:
-    """Thin HTTP client for Microsoft Graph /me (or configured endpoint)."""
-
-    def __init__(self, graph_endpoint: str, http: Optional[urllib3.PoolManager] = None):
+    def __init__(
+        self,
+        graph_endpoint: str,
+        http: Optional[urllib3.PoolManager] = None,
+    ):
         self.graph_endpoint = graph_endpoint
-        self.http = http or urllib3.PoolManager()
+        self.http = http if http is not None else urllib3.PoolManager()
 
     def get_user_profile(self, access_token: str) -> dict[str, Any]:
-        """
-        Fetch the signed-in user profile from Microsoft Graph.
-
-        Args:
-            access_token: Bearer token (without the "Bearer " prefix).
-
-        Returns:
-            Parsed JSON user payload from Graph.
-
-        Raises:
-            Exception: If Graph returns a non-200 status.
-        """
-        headers = {"Authorization": f"Bearer {access_token}"}
-        response = self.http.request("GET", self.graph_endpoint, headers=headers)
+        response = self.http.request(
+            "GET",
+            self.graph_endpoint,
+            headers={"Authorization": f"Bearer {access_token}"},
+            timeout=urllib3.Timeout(connect=3.0, read=5.0),
+            retries=False,
+            redirect=False,
+        )
 
         if response.status != 200:
-            raise Exception(
-                f"Failed to fetch user information from Microsoft Graph - status: {response.status}"
-            )
+            raise ValueError(f"Microsoft Graph retornou status {response.status}")
 
-        return json.loads(response.data.decode("utf-8"))
+        profile = json.loads(response.data.decode("utf-8"))
+        if not isinstance(profile, dict):
+            raise ValueError("Resposta inválida do Microsoft Graph")
+
+        return profile

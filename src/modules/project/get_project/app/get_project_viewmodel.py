@@ -1,10 +1,10 @@
 from src.shared.domain.entities.project import Project
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 
 
 class GetProjectViewmodel:
     project_id: str
-    project_title: str 
+    project_title: str
     project_description: str
     project_cell_image: str
     project_tech_frontend: str
@@ -17,7 +17,7 @@ class GetProjectViewmodel:
         self.project_description = project.description
         self.project_cell_image = project.cell_image
         self.project_tech_frontend = project.tech_frontend
-        self.project_tech_backend = project.tech_backend 
+        self.project_tech_backend = project.tech_backend
         self.project_color = project.color
 
     def to_dict(self):

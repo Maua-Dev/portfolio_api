@@ -1,7 +1,7 @@
 import uuid
 import pytest
 
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.shared.domain.entities.project import Project
 from pydantic import ValidationError
 
@@ -47,7 +47,7 @@ class Test_Project:
             tech_backend="Python",
             color=Color("#FFFFFF")
             )
-    
+
     def test_project_tech_frontend_is_none(self):
         with pytest.raises(ValidationError):
             Project(

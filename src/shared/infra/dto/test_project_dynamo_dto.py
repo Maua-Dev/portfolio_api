@@ -1,5 +1,5 @@
 import uuid
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.shared.domain.entities.project import Project
 from src.shared.infra.dto.project_dynamo_dto import ProjectDynamoDTO
 

@@ -1,4 +1,4 @@
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.modules.project.create_project.app.create_project_controller import CreateProjectController
 from src.modules.project.create_project.app.create_project_usecase import CreateProjectUsecase
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
@@ -30,7 +30,7 @@ class TestCreateProjectController:
         assert response.body["tech_backend"] == repo.projects[-1].tech_backend
         assert response.body["color"] == "#FFFFFF"
         assert response.body["message"] == "the project was created successfully"
-    
+
 
     def test_create_project_controller_missing_title(self):
         repo = ProjectRepositoryMock()

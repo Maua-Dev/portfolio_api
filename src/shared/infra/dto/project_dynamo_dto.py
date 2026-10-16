@@ -1,6 +1,6 @@
 from src.shared.domain.entities.project import Project
 from src.shared.infra.external.dynamo.dynamo_keys import (strip_keys, EntityKind, partition_key, sort_key)
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from pydantic import BaseModel
 import uuid
 

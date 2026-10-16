@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.modules.project.create_project.app.create_project_usecase import CreateProjectUsecase
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
 
@@ -46,9 +46,9 @@ class TestCreateProjectUsecase:
                 cell_image="imagem1.jpeg",
                 tech_frontend="React",
                 tech_backend="Node.js",
-                color=Color("#FFFFFF")                
+                color=Color("#FFFFFF")
             )
-        
+
     def test_create_project_invalid_cell_image(self):
         repo = ProjectRepositoryMock()
         usecase = CreateProjectUsecase(repo)
