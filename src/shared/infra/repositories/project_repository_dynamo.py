@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from typing import List
 from boto3.dynamodb.conditions import Key
 from src.shared.domain.entities.project import Project

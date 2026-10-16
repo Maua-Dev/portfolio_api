@@ -1,5 +1,5 @@
 from src.shared.domain.entities.project import Project
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 
 
 class GetProjectViewmodel:

@@ -1,7 +1,7 @@
 import uuid
 
 from pydantic import BaseModel, Field, ConfigDict
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 
 class Project(BaseModel):
     id:uuid.UUID = Field(default_factory=uuid.uuid4, 

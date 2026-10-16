@@ -1,6 +1,6 @@
 import uuid
 
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 
 import pytest
 

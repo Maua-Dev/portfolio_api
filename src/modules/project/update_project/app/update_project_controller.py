@@ -1,4 +1,3 @@
-from types import coroutine
 import uuid
 
 from .update_project_usecase import UpdateProjectUsecase
@@ -8,7 +7,7 @@ from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
-from pydantic.color import Color
+
 
 class UpdateProjectController:
 

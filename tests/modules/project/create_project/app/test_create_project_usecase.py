@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.modules.project.create_project.app.create_project_usecase import CreateProjectUsecase
 from src.shared.infra.repositories.project_repository_mock import ProjectRepositoryMock
 

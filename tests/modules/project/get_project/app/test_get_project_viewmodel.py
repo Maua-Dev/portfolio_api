@@ -1,6 +1,6 @@
 import uuid
 
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.modules.project.get_project.app.get_project_viewmodel import GetProjectViewmodel
 from src.shared.domain.entities.project import Project
 

@@ -1,7 +1,7 @@
 import pytest
 import os
 from uuid import UUID, uuid4
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.shared.domain.entities.project import Project
 from src.shared.helpers.errors.usecase_errors import (NoItemsFound, DuplicatedItem)
 from src.shared.infra.repositories.project_repository_dynamo import ProjectRepositoryDynamo

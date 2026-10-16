@@ -1,4 +1,4 @@
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 from src.shared.domain.entities.project import Project
 from src.shared.domain.repositories.project_repository_interface import IProjectRepository
 

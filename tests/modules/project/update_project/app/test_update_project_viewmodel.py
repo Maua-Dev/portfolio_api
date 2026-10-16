@@ -1,5 +1,5 @@
 import uuid
-from pydantic.color import Color
+from pydantic_extra_types.color import Color
 
 
 from src.modules.project.update_project.app.update_project_viewmodel import UpdateProjectViewmodel
