@@ -120,6 +120,47 @@ class LambdaConstruct(Construct):
             results_cache_ttl=Duration.seconds(0),
         )
 
+        self.get_project_function = self.create_lambda_api_gateway_integration(
+            module_name="get_project",
+            method="GET",
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            subfolder="project", )
+
+        self.get_all_projects_function = self.create_lambda_api_gateway_integration(
+            module_name="get_all_projects",
+            method="GET",
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            subfolder="project", )
+
+        self.create_project_function = self.create_lambda_api_gateway_integration(
+            module_name="create_project",
+            method="POST",
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            subfolder="project",
+            authorizer=self.microsoft_authorizer,
+        )
+
+        self.update_project_function = self.create_lambda_api_gateway_integration(
+            module_name="update_project",
+            method="PUT",
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            subfolder="project",
+            authorizer=self.microsoft_authorizer,
+        )
+
+        self.delete_project_function = self.create_lambda_api_gateway_integration(
+            module_name="delete_project",
+            method="DELETE",
+            api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            subfolder="project",
+            authorizer=self.microsoft_authorizer,
+        )
+
         self.auth_user_function = self.create_lambda_api_gateway_integration(
             module_name="auth_user",
             method="POST",
