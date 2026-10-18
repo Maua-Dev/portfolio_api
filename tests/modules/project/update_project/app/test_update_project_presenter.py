@@ -10,7 +10,7 @@ from src.modules.project.update_project.app.update_project_presenter import upda
 def build_event(project_id: str = None, title: str = None, description: str = None, cell_image: str = None,
                 tech_frontend: str = None, tech_backend: str = None, color: str = None) -> dict:
     return {
-        'queryStringParameters': {
+        'body': {
             'project_id': project_id,
             'title': title,
             'description': description,
@@ -18,8 +18,8 @@ def build_event(project_id: str = None, title: str = None, description: str = No
             'tech_frontend': tech_frontend,
             'tech_backend': tech_backend,
             'color': color
-        }
-}
+            }
+    }
 
 class TestUpdateProjectPresenter:
 
