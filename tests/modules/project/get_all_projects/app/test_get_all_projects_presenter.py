@@ -6,5 +6,5 @@ class Test_GetAllProjectsPresenter:
         event = {}
         response = lambda_handler(event, None)
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])["message"] == "projects were retreived successfully"
+        assert json.loads(response["body"])["message"] == "projects were retrieved successfully"
         assert len(json.loads(response["body"])["projects"]) == 3

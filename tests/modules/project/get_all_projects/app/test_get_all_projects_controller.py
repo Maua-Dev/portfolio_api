@@ -13,5 +13,5 @@ class Test_GetAllProjectsController:
         response = controller(request=request)
         
         assert response.status_code == 200
-        assert response.body['message'] == "projects were retreived successfully"
+        assert response.body['message'] == "projects were retrieved successfully"
         assert len(response.body['projects']) == 3

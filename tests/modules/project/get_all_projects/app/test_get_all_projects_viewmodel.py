@@ -16,7 +16,7 @@ class Test_GetAllProjectsViewmodel:
                     'project_cell_image': 'imagem_teste1.jpeg',
                     'project_tech_frontend': 'React',
                     'project_tech_backend': 'Python',
-                    'project_color': str(projects[0].color)
+                    'project_color': projects[0].color.as_hex()
                 },
                 {
                     'project_id': str(projects[1].id),
@@ -25,7 +25,7 @@ class Test_GetAllProjectsViewmodel:
                     'project_cell_image': 'imagem_teste2.jpeg',
                     'project_tech_frontend': 'HTML',
                     'project_tech_backend': 'Java',
-                    'project_color': str(projects[1].color)
+                    'project_color': projects[1].color.as_hex()
                 },
                 {
                     'project_id': str(projects[2].id),
@@ -34,10 +34,10 @@ class Test_GetAllProjectsViewmodel:
                     'project_cell_image': 'imagem_teste3.jpeg',
                     'project_tech_frontend': 'React',
                     'project_tech_backend': 'C++',
-                    'project_color': str(projects[2].color)
+                    'project_color': projects[2].color.as_hex()
                 }
             ],
-            'message': "projects were retreived successfully"
+            'message': "projects were retrieved successfully"
         }
         
         assert viewmodel.to_dict() == expected

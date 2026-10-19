@@ -17,7 +17,7 @@ class ProjectViewmodel:
         self.project_cell_image = project.cell_image
         self.project_tech_frontend = project.tech_frontend
         self.project_tech_backend = project.tech_backend 
-        self.project_color = str(project.color)
+        self.project_color = project.color.as_hex()
 
     def to_dict(self):
         return {
@@ -39,5 +39,6 @@ class GetAllProjectsViewmodel:
     def to_dict(self):
         return {
             'projects': [project.to_dict() for project in self.projects],
-            'message': "projects were retreived successfully"
+            'message': "projects were retrieved successfully"
         }
+
