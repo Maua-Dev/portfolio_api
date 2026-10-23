@@ -30,7 +30,7 @@ class TestCreateProjectController:
         assert response.body["tech_backend"] == repo.projects[-1].tech_backend
         assert response.body["color"] == "#FFFFFF"
         assert response.body["message"] == "the project was created successfully"
-    
+
 
     def test_create_project_controller_missing_title(self):
         repo = ProjectRepositoryMock()

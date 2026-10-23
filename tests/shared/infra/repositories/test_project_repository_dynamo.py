@@ -167,7 +167,7 @@ class TestProjectRepositoryDynamo:
         assert result.tech_backend == project.tech_backend
         assert result.color == project.color
 
-    @pytest.mark.skip() 
+    @pytest.mark.skip()
     def test_delete_not_found_project(self):
         project_id = uuid4()
 

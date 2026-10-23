@@ -17,7 +17,7 @@ class Test_ProjectRepositoryMock:
 
     def test_get_project_not_found(self):
         repo = ProjectRepositoryMock()
-        
+
         project = Project(
             title="Projeto",
             description="Descrição",

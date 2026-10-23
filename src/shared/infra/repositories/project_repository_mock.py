@@ -13,7 +13,7 @@ class ProjectRepositoryMock(IProjectRepository):
             Project(
                 title="Projeto Teste 1",
                 description="Descrição projeto teste 1",
-                cell_image="imagem_teste1.jpeg",  
+                cell_image="imagem_teste1.jpeg",
                 tech_frontend="React",
                 tech_backend="Python",
                 color=Color("#FFFFFF")

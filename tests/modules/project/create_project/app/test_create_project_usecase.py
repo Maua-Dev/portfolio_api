@@ -46,9 +46,9 @@ class TestCreateProjectUsecase:
                 cell_image="imagem1.jpeg",
                 tech_frontend="React",
                 tech_backend="Node.js",
-                color=Color("#FFFFFF")                
+                color=Color("#FFFFFF")
             )
-        
+
     def test_create_project_invalid_cell_image(self):
         repo = ProjectRepositoryMock()
         usecase = CreateProjectUsecase(repo)

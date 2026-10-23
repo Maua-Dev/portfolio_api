@@ -47,7 +47,7 @@ class Test_Project:
             tech_backend="Python",
             color=Color("#FFFFFF")
             )
-    
+
     def test_project_tech_frontend_is_none(self):
         with pytest.raises(ValidationError):
             Project(
