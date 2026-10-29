@@ -4,10 +4,7 @@ import uuid
 from src.modules.microsoft_authorizer.app.microsoft_authorizer_usecase import (
     MicrosoftAuthorizerUsecase,
 )
-from src.shared.domain.entities.user import User
-from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.errors.external_errors import JwtVerificationError
-from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
 class _FakeJwtVerifier:
@@ -25,62 +22,15 @@ class _FakeJwtVerifier:
 
 class Test_MicrosoftAuthorizerUsecase:
 
-    def _usecase(self, claims: dict, repo: UserRepositoryMock | None = None):
-        repo = repo or UserRepositoryMock()
+    def _usecase(self, claims: dict | None = None, error: Exception | None = None):
         return MicrosoftAuthorizerUsecase(
-            jwt_verifier=_FakeJwtVerifier(claims=claims),
-            user_repo=repo,
-        ), repo
-
-    def test_allow_existing_user_on_protected_route(self):
-        user_id = uuid.UUID("af852f40-0135-406d-b5d7-7ed5dce9bc8e")
-        repo = UserRepositoryMock()
-        repo.users[0] = User(
-            id=user_id,
-            email="21.00000-0@maua.br",
-            role=RoleEnum.USER,
-        )
-        usecase, _ = self._usecase(
-            {
-                "sub": str(user_id),
-                "mail": "21.00000-0@maua.br",
-            },
-            repo=repo,
+            jwt_verifier=_FakeJwtVerifier(claims=claims, error=error),
         )
 
-        policy = usecase(
-            authorization_token="Bearer token-123",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
-        )
-
-        assert policy["principalId"] == str(user_id)
-        assert policy["policyDocument"]["Statement"][0]["Effect"] == "Allow"
-        context_user = json.loads(policy["context"]["user"])
-        assert context_user == {
-            "sub": str(user_id),
-            "mail": "21.00000-0@maua.br",
-        }
-
-    def test_deny_when_user_missing_on_protected_route(self):
-        usecase, _ = self._usecase(
-            {
-                "sub": str(uuid.uuid4()),
-                "mail": "21.00000-0@maua.br",
-            }
-        )
-
-        policy = usecase(
-            authorization_token="token-123",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
-        )
-
-        assert policy["policyDocument"]["Statement"][0]["Effect"] == "Deny"
-        assert "context" not in policy
-
-    def test_allow_onboarding_route_without_existing_user(self):
+    def test_allow_valid_signed_token(self):
         user_id = str(uuid.uuid4())
-        usecase, _ = self._usecase(
-            {
+        usecase = self._usecase(
+            claims={
                 "sub": user_id,
                 "mail": "21.00000-0@maua.br",
             }
@@ -88,20 +38,19 @@ class Test_MicrosoftAuthorizerUsecase:
 
         policy = usecase(
             authorization_token="Bearer token-123",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
+            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
         )
 
         assert policy["principalId"] == user_id
         assert policy["policyDocument"]["Statement"][0]["Effect"] == "Allow"
-        context_user = json.loads(policy["context"]["user"])
-        assert context_user == {
+        assert json.loads(policy["context"]["user"]) == {
             "sub": user_id,
             "mail": "21.00000-0@maua.br",
         }
 
     def test_deny_non_maua_email(self):
-        usecase, _ = self._usecase(
-            {
+        usecase = self._usecase(
+            claims={
                 "sub": str(uuid.uuid4()),
                 "mail": "user@gmail.com",
             }
@@ -109,14 +58,14 @@ class Test_MicrosoftAuthorizerUsecase:
 
         policy = usecase(
             authorization_token="token",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
+            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
         )
 
         assert policy["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
     def test_deny_invalid_uuid_sub(self):
-        usecase, _ = self._usecase(
-            {
+        usecase = self._usecase(
+            claims={
                 "sub": "not-a-uuid",
                 "mail": "21.00000-0@maua.br",
             }
@@ -124,23 +73,17 @@ class Test_MicrosoftAuthorizerUsecase:
 
         policy = usecase(
             authorization_token="token",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
+            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
         )
 
         assert policy["policyDocument"]["Statement"][0]["Effect"] == "Deny"
 
     def test_deny_invalid_jwt_signature(self):
-        repo = UserRepositoryMock()
-        usecase = MicrosoftAuthorizerUsecase(
-            jwt_verifier=_FakeJwtVerifier(
-                error=JwtVerificationError("invalid signature")
-            ),
-            user_repo=repo,
-        )
+        usecase = self._usecase(error=JwtVerificationError("invalid signature"))
 
         policy = usecase(
             authorization_token="Bearer bad.token.here",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
+            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
         )
 
         assert policy["policyDocument"]["Statement"][0]["Effect"] == "Deny"
@@ -152,14 +95,11 @@ class Test_MicrosoftAuthorizerUsecase:
                 "mail": "21.00000-0@maua.br",
             }
         )
-        usecase = MicrosoftAuthorizerUsecase(
-            jwt_verifier=verifier,
-            user_repo=UserRepositoryMock(),
-        )
+        usecase = MicrosoftAuthorizerUsecase(jwt_verifier=verifier)
 
         usecase(
             authorization_token="Bearer abc.def.ghi",
-            method_arn="arn:aws:execute-api:sa-east-1:123:api/POST/auth",
+            method_arn="arn:aws:execute-api:sa-east-1:123:api/GET/users",
         )
 
         assert verifier.last_token == "abc.def.ghi"
