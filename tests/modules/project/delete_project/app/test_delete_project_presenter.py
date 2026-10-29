@@ -34,7 +34,6 @@ class TestDeleteProjectPresenter:
                     "user": json.dumps({
                         "sub": admin_user_id,
                         "mail": "admin@maua.br",
-                        "name": "Admin"
                     }),
                     "iam": {
                         "accessKey": "AKIA...",

@@ -4,28 +4,22 @@ from .microsoft_authorizer_usecase import MicrosoftAuthorizerUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.auth.iam_policy import generate_policy
 from src.shared.helpers.observability.wrap_handler import observed_handler
-from src.shared.infra.external.microsoft.graph_client import MicrosoftGraphClient
+from src.shared.infra.external.jwt.jwt_kms_verifier import JwtKmsVerifier
 
-_DEFAULT_GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0/me"
-
-graph_endpoint = (
-    os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
-    or os.environ.get("MS_GRAPH_ENDPOINT")
-    or _DEFAULT_GRAPH_ENDPOINT
-)
 user_repo = Environments.get_user_repo()()
-graph_client = MicrosoftGraphClient(graph_endpoint=graph_endpoint)
+jwt_verifier = JwtKmsVerifier(key_arn=os.environ.get("JWT_SIGN_KEY_ARN", ""))
 usecase = MicrosoftAuthorizerUsecase(
-    graph_client=graph_client,
+    jwt_verifier=jwt_verifier,
     user_repo=user_repo,
 )
+
 
 @observed_handler("microsoft_authorizer")
 def lambda_handler(event, context):
     """
     API Gateway TOKEN authorizer.
 
-    Validates the Bearer token against Microsoft Graph, enforces @maua.br,
+    Verifies the Bearer JWT against KMS (JWT_SIGN_KEY_ARN), enforces @maua.br,
     and (except onboarding routes) checks that the user exists in our DB.
     """
     method_arn = event.get("methodArn", "*")

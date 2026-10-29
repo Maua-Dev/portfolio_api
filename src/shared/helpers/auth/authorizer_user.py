@@ -1,6 +1,6 @@
 """Helpers for API Gateway authorizer → Lambda request.
 
-Contrato do context: apenas claims Microsoft — sub, mail, name.
+Contrato do context: apenas claims — sub, mail.
 Role / User de domínio NÃO entram aqui; isso é responsabilidade do usecase.
 """
 from __future__ import annotations
@@ -12,21 +12,19 @@ from typing import Any, Optional
 USER_FROM_AUTHORIZER_KEY = "user_from_authorizer"
 
 
-def build_authorizer_user_context(*, sub: str, mail: str, name: str) -> dict[str, str]:
+def build_authorizer_user_context(*, sub: str, mail: str) -> dict[str, str]:
     """
-    Monta o context do TOKEN authorizer só com claims Microsoft.
+    Monta o context do TOKEN authorizer só com claims do JWT.
 
     Args:
         sub: identificador do usuário no IdP (Graph `id` / JWT `sub`)
         mail: e-mail
-        name: nome de exibição
     """
     return {
         "user": json.dumps(
             {
                 "sub": sub,
                 "mail": mail,
-                "name": name,
             }
         )
     }
@@ -39,7 +37,7 @@ def parse_authorizer_user_from_event(event: dict | None) -> Optional[dict[str, A
     API Gateway REST coloca o context em:
       event["requestContext"]["authorizer"]["user"]  # string JSON
 
-    Retorno esperado: {"sub", "mail", "name"} ou None.
+    Retorno esperado: {"sub", "mail"} ou None.
     """
     if not event:
         return None
@@ -63,10 +61,9 @@ def parse_authorizer_user_from_event(event: dict | None) -> Optional[dict[str, A
 
     sub = parsed.get("sub")
     mail = parsed.get("mail")
-    name = parsed.get("name")
-    if not isinstance(sub, str) or not isinstance(mail, str) or not isinstance(name, str):
+    if not isinstance(sub, str) or not isinstance(mail, str):
         return None
     if not sub.strip() or not mail.strip():
         return None
 
-    return {"sub": sub, "mail": mail, "name": name}
+    return {"sub": sub, "mail": mail}

@@ -9,6 +9,7 @@ from components.dynamo_construct import DynamoConstruct
 from components.lambda_construct import LambdaConstruct
 from components.s3_construct import S3Construct
 from components.ssm_construct import SsmConstruct
+from iac.components.kms_construct import KMSConstruct
 
 class IacStack(Stack):
 
@@ -45,6 +46,9 @@ class IacStack(Stack):
             stage=stage,
         )
 
+        # TODO instanciar o KMS igual os outros constructs
+        self.kms_construct = ...
+
         # alinhado com Environments.load_envs() (stages DEV/HOMOLOG/PROD)
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage.upper(),
@@ -54,6 +58,7 @@ class IacStack(Stack):
             "DYNAMO_SORT_KEY": "sk",
             "MSS_NAME": stack_name,
             "ENTITY_ASSETS_BUCKET_NAME": self.s3_construct.entity_assets_bucket.bucket_name,
+            "JWT_SIGN_KEY_ARN": self.kms_construct.jwt_sign_key.key_arn,
         }
 
         self.lambda_construct = LambdaConstruct(

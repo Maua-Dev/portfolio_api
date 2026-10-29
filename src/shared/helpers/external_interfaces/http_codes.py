@@ -6,8 +6,8 @@ from src.shared.helpers.external_interfaces.http_models import HttpResponse
 
 # 2xx - Success
 class OK(HttpResponse):
-    def __init__(self, body: Any = None) -> None:
-        super().__init__(HttpStatusCodeEnum.OK.value, body)
+    def __init__(self, body: Any = None, headers: dict | None = None) -> None:
+        super().__init__(HttpStatusCodeEnum.OK.value, body, headers=headers or {})
 
 
 class Created(HttpResponse):
