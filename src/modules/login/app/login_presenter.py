@@ -1,4 +1,3 @@
-
 from .login_controller import LoginController
 from .login_usecase import LoginUsecase
 from src.shared.environments import Environments
@@ -6,9 +5,14 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 from src.shared.helpers.observability.wrap_handler import observed_handler
 
 observability = Environments.get_observability()(module_name="login")
+user_repo = Environments.get_user_repo()()
+session_repo = Environments.get_session_repo()()
 
-repo = Environments.get_user_repo()()
-usecase = LoginUsecase(repo, observability=observability)
+usecase = LoginUsecase(
+    repo=user_repo,
+    session_repo=session_repo,
+    observability=observability,
+)
 controller = LoginController(usecase, observability=observability)
 
 
@@ -19,6 +23,6 @@ def lambda_handler(event, context):
     http_response = LambdaHttpResponse(
         status_code=response.status_code,
         body=response.body,
-        headers=response.headers
+        headers=response.headers,
     )
     return http_response.toDict()

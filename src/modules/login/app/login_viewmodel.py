@@ -4,8 +4,8 @@ from src.shared.domain.entities.user import User
 class LoginViewmodel:
     def __init__(self, access_token: str, user: User):
         self.access_token = access_token
+        self.email = str(user.email)
         role = user.role
-        email = user.email
         self.user_role = role.value if hasattr(role, "value") else role
         self.message = "Login successful"
 

@@ -7,13 +7,14 @@ from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import RoleEnum
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+from src.shared.infra.repositories.session_repository_mock import SessionRepositoryMock
 
 
 class Test_LoginController:
     def test_login_controller_missing_id_token(self):
         repo = UserRepositoryMock()
         observability = MagicMock()
-        usecase = LoginUsecase(repo=repo, observability=observability)
+        usecase = LoginUsecase(repo=repo, session_repo=SessionRepositoryMock(), observability=observability)
         controller = LoginController(usecase=usecase, observability=observability)
 
         response = controller(HttpRequest(body={}))
@@ -24,7 +25,7 @@ class Test_LoginController:
     def test_login_controller_wrong_type_id_token(self):
         repo = UserRepositoryMock()
         observability = MagicMock()
-        usecase = LoginUsecase(repo=repo, observability=observability)
+        usecase = LoginUsecase(repo=repo, session_repo=SessionRepositoryMock(), observability=observability)
         controller = LoginController(usecase=usecase, observability=observability)
 
         response = controller(HttpRequest(body={"id_token": 123}))
@@ -48,11 +49,15 @@ class Test_LoginController:
 
         assert response.status_code == 200
         assert response.body["access_token"] == "signed.access.token"
-        assert response.body["user"]["role"] == user.role.value
+        assert response.body["user"]["role"] == user.role
         assert response.body["message"] == "Login successful"
+        assert response.body["user"]["email"] == str(user.email)
+        assert response.headers["Content-Type"] == "application/json"
         assert "Set-Cookie" in response.headers
         assert response.headers["Set-Cookie"].startswith("refresh_token=")
         assert "HttpOnly" in response.headers["Set-Cookie"]
         assert "Secure" in response.headers["Set-Cookie"]
         assert "SameSite=Strict" in response.headers["Set-Cookie"]
+        assert "Path=/" in response.headers["Set-Cookie"]
+        assert "Max-Age=604800" in response.headers["Set-Cookie"]
         usecase.assert_called_once_with(id_token="aaa.bbb.ccc")

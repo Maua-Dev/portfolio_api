@@ -1,8 +1,8 @@
 """Convenções de chaves Dynamo (tabela base, sem GSI).
 
 Tabela base (alinhada a iac/components/dynamo_construct.py):
-  pk = USER | PROJECT
-  sk = USER#<uuid> | PROJECT#<uuid>
+  pk = USER | PROJECT | SESSION
+  sk = USER#<uuid> | PROJECT#<uuid> | SESSION#<uuid>
 
 Uso no repository Dynamo (exemplo)::
 
@@ -30,6 +30,7 @@ STORAGE_KEY_ATTRS = (PK_ATTR, SK_ATTR)
 class EntityKind(str, Enum):
     USER = "USER"
     PROJECT = "PROJECT"
+    SESSION = "SESSION"
 
 
 def partition_key(kind: EntityKind) -> str:
