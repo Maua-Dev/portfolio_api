@@ -20,8 +20,8 @@ from src.shared.helpers.errors.usecase_errors import (
     NoItemsFound,
 )
 from src.shared.infra.external.jwt.jwt_kms_signer import JwtKmsSigner
+from src.shared.infra.external.jwt.jwt_utils import is_jwt_shape
 from src.shared.infra.external.microsoft.id_token_verifier import MicrosoftIdTokenVerifier
-
 
 _MAUA_EMAIL_REGEX = re.compile(r"^[^@\s]+@maua\.br$", re.IGNORECASE)
 
@@ -42,11 +42,13 @@ class LoginUsecase:
         self.ms_id_token_verifier = ms_id_token_verifier
 
     def __call__(self, id_token: str) -> tuple[str, str, User]:
-        verifier = self._get_ms_id_token_verifier()
+        if not is_jwt_shape(id_token):
+            raise InvalidJwtFormat("id_token")
 
         try:
+            verifier = self._get_ms_id_token_verifier()
             ms_payload = verifier.verify(id_token)
-        except JwtVerificationError as error:
+        except (JwtVerificationError, EnvVarNotFound) as error:
             self.observability.log_exception(
                 f"Falha na verificação do Microsoft id_token: {error}"
             )

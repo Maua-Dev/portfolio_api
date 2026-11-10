@@ -1,5 +1,9 @@
+import os
 import json
 import uuid
+
+os.environ["STAGE"] = "TEST"
+os.environ["AWS_DEFAULT_REGION"] = "sa-east-1"
 
 from src.modules.microsoft_authorizer.app import microsoft_authorizer_presenter as presenter_module
 from src.modules.microsoft_authorizer.app.microsoft_authorizer_presenter import lambda_handler

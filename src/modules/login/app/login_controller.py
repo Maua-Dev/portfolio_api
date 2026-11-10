@@ -23,13 +23,13 @@ from src.shared.domain.observability.observability_interface import IObservabili
 from .login_usecase import LoginUsecase
 from .login_viewmodel import LoginViewmodel
 
-
 _REFRESH_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
 
 class LoginController:
     def __init__(self, usecase: LoginUsecase, observability: IObservability):
         self.usecase = usecase
+        self.LoginUsecase = usecase
         self.observability = observability
 
     def __call__(self, request: IRequest) -> IResponse:

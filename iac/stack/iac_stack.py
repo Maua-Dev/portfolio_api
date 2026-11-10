@@ -9,7 +9,10 @@ from components.dynamo_construct import DynamoConstruct
 from components.lambda_construct import LambdaConstruct
 from components.s3_construct import S3Construct
 from components.ssm_construct import SsmConstruct
-from iac.components.kms_construct import KMSConstruct
+try:
+    from components.kms_construct import KMSConstruct
+except ImportError:
+    from iac.components.kms_construct import KMSConstruct
 
 class IacStack(Stack):
 
@@ -46,8 +49,12 @@ class IacStack(Stack):
             stage=stage,
         )
 
-        # TODO instanciar o KMS igual os outros constructs
-        self.kms_construct = ...
+        self.kms_construct = KMSConstruct(
+            self,
+            construct_id="KMS",
+            stack_name=stack_name,
+            stage=stage,
+        )
 
         # alinhado com Environments.load_envs() (stages DEV/HOMOLOG/PROD)
         ENVIRONMENT_VARIABLES = {

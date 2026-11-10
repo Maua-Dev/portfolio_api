@@ -22,7 +22,6 @@ class User(BaseModel):
     )
 
     model_config = ConfigDict(
-        use_enum_values=True,
         extra="forbid",
         populate_by_name=True
     )
